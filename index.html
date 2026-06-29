@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Entraînement AI-103 — Azure AI Apps and Agents Developer Associate</title>
+<style>
+  :root {
+    --azure: #0078d4;
+    --azure-dark: #005a9e;
+    --azure-light: #50b0f0;
+    --bg: #f3f6fb;
+    --card: #ffffff;
+    --ink: #1b1a19;
+    --muted: #605e5c;
+    --line: #e1e5ea;
+    --green: #107c10;
+    --green-bg: #e6f4e6;
+    --red: #d13438;
+    --red-bg: #fde7e9;
+    --amber: #c19c00;
+    --amber-bg: #fff4ce;
+    --shadow: 0 1.6px 3.6px rgba(0,0,0,.10), 0 .3px .9px rgba(0,0,0,.07);
+    --shadow-lg: 0 6.4px 14.4px rgba(0,0,0,.13), 0 1.2px 3.6px rgba(0,0,0,.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--azure-dark); }
+  button { font-family: inherit; cursor: pointer; }
+
+  /* Header */
+  header {
+    background: linear-gradient(120deg, var(--azure-dark), var(--azure));
+    color: #fff;
+    padding: 0;
+    box-shadow: var(--shadow);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .nav {
+    max-width: 1180px; margin: 0 auto;
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 18px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+  .brand .logo {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: rgba(255,255,255,.18);
+    display: grid; place-items: center; font-weight: 700; font-size: 15px;
+    border: 1px solid rgba(255,255,255,.35);
+  }
+  .brand h1 { font-size: 15px; margin: 0; font-weight: 600; }
+  .brand small { display: block; font-size: 11px; opacity: .85; font-weight: 400; }
+  .nav-btn {
+    background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.22);
+    padding: 7px 13px; border-radius: 7px; font-size: 13px; font-weight: 500;
+    transition: background .15s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,.26); }
+  .nav-btn.active { background: #fff; color: var(--azure-dark); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 22px 18px 60px; }
+  .view { display: none; animation: fade .25s ease; }
+  .view.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  h2.section-title { font-size: 22px; margin: 4px 0 4px; }
+  .section-sub { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+
+  /* Cards / grid */
+  .grid { display: grid; gap: 16px; }
+  .grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 900px) { .grid.cols-4, .grid.cols-3 { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 600px) { .grid.cols-4, .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+    transition: box-shadow .18s, transform .18s;
+  }
+  .card.hover:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+
+  .stat { text-align: center; }
+  .stat .num { font-size: 30px; font-weight: 700; color: var(--azure-dark); line-height: 1.1; }
+  .stat .lbl { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+  .btn {
+    background: var(--azure); color: #fff; border: none; padding: 10px 18px;
+    border-radius: 7px; font-size: 14px; font-weight: 600; transition: background .15s;
+  }
+  .btn:hover { background: var(--azure-dark); }
+  .btn.secondary { background: #fff; color: var(--azure-dark); border: 1px solid var(--azure); }
+  .btn.secondary:hover { background: #eaf3fc; }
+  .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+  .btn.ghost:hover { background: #f0f0f0; }
+  .btn.danger { background: var(--red); }
+  .btn.danger:hover { background: #a82c30; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.lg { padding: 13px 26px; font-size: 15px; }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .spacer { flex: 1; }
+
+  /* Badges */
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 9px;
+    border-radius: 20px; letter-spacing: .2px;
+  }
+  .badge.facile { background: var(--green-bg); color: var(--green); }
+  .badge.intermédiaire { background: #e6f0fb; color: var(--azure-dark); }
+  .badge.difficile { background: var(--red-bg); color: var(--red); }
+  .badge.type { background: #f0eefb; color: #5b3fb0; }
+  .badge.status-done { background: var(--green-bg); color: var(--green); }
+  .badge.status-progress { background: var(--amber-bg); color: var(--amber); }
+  .badge.status-new { background: #eef1f5; color: var(--muted); }
+
+  .pill { display:inline-block; background:#eef3f9; color: var(--azure-dark); font-size:11.5px; padding:3px 9px; border-radius:6px; margin:2px 4px 2px 0; }
+
+  /* Progress bar */
+  .progress { background: #e7ebf0; border-radius: 20px; height: 9px; overflow: hidden; }
+  .progress > span { display: block; height: 100%; background: linear-gradient(90deg, var(--azure-light), var(--azure)); border-radius: 20px; transition: width .4s; }
+
+  .module-card h3 { margin: 2px 0 6px; font-size: 17px; }
+  .module-card .desc { color: var(--muted); font-size: 13.5px; min-height: 40px; }
+  .module-icon { width: 42px; height: 42px; border-radius: 9px; display:grid; place-items:center; font-size:20px; background:#eaf3fc; margin-bottom:8px; }
+
+  .exam-row {
+    display:flex; align-items:center; gap:12px; padding:11px 14px;
+    border:1px solid var(--line); border-radius:8px; margin-bottom:9px; background:#fff;
+    transition: background .15s;
+  }
+  .exam-row:hover { background:#f7fafd; }
+  .exam-row .meta { flex:1; }
+  .exam-row .meta b { font-size:14px; }
+  .exam-row .meta small { color: var(--muted); display:block; font-size:12px; }
+
+  /* Exam runner */
+  .runner-top {
+    display:flex; align-items:center; gap:14px; margin-bottom:16px; flex-wrap:wrap;
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:12px 16px; box-shadow: var(--shadow);
+  }
+  .timer { font-variant-numeric: tabular-nums; font-weight:700; font-size:17px; color: var(--azure-dark); }
+  .timer.warn { color: var(--red); }
+  .qcounter { font-size:13px; color: var(--muted); }
+
+  .question-card { background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:22px; box-shadow: var(--shadow); }
+  .qtext { font-size:17px; font-weight:600; margin:10px 0 6px; }
+  .context-box {
+    background:#f7fafd; border-left:4px solid var(--azure-light); padding:12px 14px;
+    border-radius:6px; margin:12px 0; font-size:13.5px; color:#333; white-space:pre-wrap;
+  }
+  .context-box code, .qtext code, .opt-label code { background:#eef1f5; padding:1px 5px; border-radius:4px; font-family: Consolas, monospace; font-size:.92em; }
+  pre.code { background:#1e1e1e; color:#dcdcdc; padding:14px; border-radius:8px; overflow:auto; font-size:13px; font-family: Consolas, monospace; margin:12px 0; }
+
+  .options { margin:16px 0; display:flex; flex-direction:column; gap:10px; }
+  .opt {
+    display:flex; align-items:flex-start; gap:11px; border:1.5px solid var(--line);
+    border-radius:9px; padding:12px 14px; cursor:pointer; transition: all .12s; background:#fff;
+  }
+  .opt:hover { border-color: var(--azure-light); background:#f7fafd; }
+  .opt.selected { border-color: var(--azure); background:#eaf3fc; }
+  .opt.correct { border-color: var(--green); background: var(--green-bg); }
+  .opt.incorrect { border-color: var(--red); background: var(--red-bg); }
+  .opt input { margin-top:3px; }
+  .opt-label { flex:1; font-size:14.5px; }
+  .opt .marker { font-weight:700; margin-left:auto; font-size:13px; }
+  .opt.correct .marker { color: var(--green); }
+  .opt.incorrect .marker { color: var(--red); }
+
+  /* ordering */
+  .order-item { display:flex; align-items:center; gap:10px; border:1.5px solid var(--line); border-radius:9px; padding:10px 12px; margin-bottom:8px; background:#fff; }
+  .order-item .num { width:24px; height:24px; border-radius:6px; background:var(--azure); color:#fff; display:grid; place-items:center; font-size:13px; font-weight:700; }
+  .order-item .txt { flex:1; font-size:14px; }
+  .order-item .arrows { display:flex; flex-direction:column; gap:2px; }
+  .order-item .arrows button { border:1px solid var(--line); background:#f6f8fa; border-radius:5px; width:26px; height:20px; line-height:1; font-size:11px; padding:0; }
+  .order-item .arrows button:hover { background:#e7ebf0; }
+
+  .feedback { margin-top:18px; border-radius:9px; padding:16px; font-size:14px; animation: fade .2s; }
+  .feedback.ok { background: var(--green-bg); border:1px solid #b5dfb5; }
+  .feedback.ko { background: var(--red-bg); border:1px solid #f3c2c4; }
+  .feedback h4 { margin:0 0 8px; font-size:15px; }
+  .feedback .block { margin:10px 0; }
+  .feedback .block b { display:block; font-size:12.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:3px; }
+  .tip { background: var(--amber-bg); border-left:4px solid var(--amber); padding:10px 12px; border-radius:6px; margin-top:8px; }
+  .realworld { background:#eef3f9; border-left:4px solid var(--azure); padding:10px 12px; border-radius:6px; margin-top:8px; }
+
+  .nav-q { display:flex; gap:10px; margin-top:20px; align-items:center; }
+
+  /* Results */
+  .score-hero { text-align:center; padding:30px 20px; }
+  .score-ring {
+    width:150px; height:150px; border-radius:50%; margin:0 auto 14px;
+    display:grid; place-items:center; position:relative;
+  }
+  .score-ring .inner { width:118px; height:118px; background:#fff; border-radius:50%; display:grid; place-items:center; flex-direction:column; }
+  .score-ring .pct { font-size:34px; font-weight:800; }
+  .verdict { font-size:22px; font-weight:700; margin:6px 0; }
+  .verdict.pass { color: var(--green); }
+  .verdict.fail { color: var(--red); }
+
+  .review-item { border:1px solid var(--line); border-radius:9px; margin-bottom:10px; overflow:hidden; }
+  .review-item .head { display:flex; gap:10px; align-items:center; padding:12px 14px; cursor:pointer; }
+  .review-item .head:hover { background:#f7fafd; }
+  .review-item .head .ic { width:24px; height:24px; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:13px; font-weight:700; flex-shrink:0; }
+  .review-item .ic.ok { background: var(--green); }
+  .review-item .ic.ko { background: var(--red); }
+  .review-item .body { padding:0 14px 14px; display:none; }
+  .review-item.open .body { display:block; }
+
+  .empty { text-align:center; padding:50px 20px; color: var(--muted); }
+  .empty .big { font-size:46px; margin-bottom:10px; }
+
+  .toast {
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+    background:#323130; color:#fff; padding:11px 20px; border-radius:8px; font-size:13.5px;
+    box-shadow: var(--shadow-lg); z-index:100; opacity:0; pointer-events:none; transition:opacity .25s;
+  }
+  .toast.show { opacity:1; }
+
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; place-items:center; z-index:90; padding:18px; }
+  .modal-bg.show { display:grid; }
+  .modal { background:#fff; border-radius:12px; max-width:560px; width:100%; padding:24px; box-shadow:var(--shadow-lg); max-height:88vh; overflow:auto; }
+  .modal h3 { margin-top:0; }
+  textarea.json-in { width:100%; min-height:160px; font-family:Consolas,monospace; font-size:12.5px; border:1px solid var(--line); border-radius:8px; padding:10px; }
+
+  .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); margin-top:6px; }
+  .legend span { display:inline-flex; align-items:center; gap:5px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:24px; }
+  .skill-list { margin:8px 0 0; padding-left:18px; font-size:13px; color:#444; }
+  .skill-list li { margin:3px 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand">
+      <div class="logo">AI</div>
+      <div>
+        <h1>Entraînement AI-103</h1>
+        <small>Azure AI Apps and Agents Developer Associate</small>
+      </div>
+    </div>
+    <button class="nav-btn active" data-nav="home">Accueil</button>
+    <button class="nav-btn" data-nav="modules">Modules</button>
+    <button class="nav-btn" data-nav="finals">Examens finaux</button>
+    <button class="nav-btn" data-nav="review">Réviser mes erreurs</button>
+    <button class="nav-btn" data-nav="manage">Gérer</button>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view active" id="view-home"></section>
+  <!-- MODULES -->
+  <section class="view" id="view-modules"></section>
+  <!-- MODULE DETAIL -->
+  <section class="view" id="view-module"></section>
+  <!-- FINALS -->
+  <section class="view" id="view-finals"></section>
+  <!-- EXAM RUNNER -->
+  <section class="view" id="view-exam"></section>
+  <!-- RESULTS -->
+  <section class="view" id="view-results"></section>
+  <!-- REVIEW ERRORS -->
+  <section class="view" id="view-review"></section>
+  <!-- MANAGE -->
+  <section class="view" id="view-manage"></section>
+</main>
+
+<footer>
+  Plateforme d'entraînement non officielle · Conçue pour la préparation à la certification AI-103 · Données stockées localement (localStorage)
+</footer>
+
+<div class="toast" id="toast"></div>
+<div class="modal-bg" id="modal-bg"><div class="modal" id="modal"></div></div>
+
+<script>
+/* =====================================================================
+   AI-103 — Plateforme d'examens blancs
+   Architecture : modules -> banque de questions -> examens (générés)
+   Stockage : localStorage
+   ===================================================================== */
+
+/* -------------------- 1. MODULES -------------------- */
+const modules = [
+  {
+    id: "m1",
+    icon: "🤖",
+    title: "Develop generative AI apps in Azure",
+    short: "GenAI Apps",
+    duration: "6 h 52",
+    paths: 6,
+    description: "Concevoir des applications d'IA générative avec Azure OpenAI Service : chat completions, embeddings, RAG et déploiement.",
+    skills: [
+      "Azure OpenAI Service & déploiements de modèles",
+      "Prompt engineering & chat completions",
+      "Embeddings et recherche vectorielle",
+      "RAG avec Azure AI Search",
+      "Function calling & structured outputs",
+      "Azure AI Content Safety & monitoring"
+    ]
+  },
+  {
+    id: "m2",
+    icon: "🧩",
+    title: "Develop AI agents on Azure",
+    short: "AI Agents",
+    duration: "9 h 52",
+    paths: 9,
+    description: "Construire et orchestrer des agents avec Azure AI Foundry et Azure AI Agent Service : tools, mémoire, multi-agents, sécurité.",
+    skills: [
+      "Azure AI Foundry & Azure AI Agent Service",
+      "Agents, tools & grounding",
+      "Orchestration multi-agents",
+      "Semantic Kernel & MCP",
+      "Mémoire et threads de conversation",
+      "Sécurité et évaluation des agents"
+    ]
+  },
+  {
+    id: "m3",
+    icon: "💬",
+    title: "Develop natural language solutions in Azure",
+    short: "NLP",
+    duration: "5 h 46",
+    paths: 7,
+    description: "Analyser le langage naturel avec Azure AI Language : sentiment, entités, PII, résumé et classification personnalisée.",
+    skills: [
+      "Azure AI Language (sentiment, key phrases)",
+      "Named entity recognition & PII detection",
+      "Language detection & summarization",
+      "Custom text classification",
+      "Conversational Language Understanding (CLU)"
+    ]
+  },
+  {
+    id: "m4",
+    icon: "👁️",
+    title: "Extract insights from visual data on Azure",
+    short: "Vision & Documents",
+    duration: "7 h 06",
+    paths: 8,
+    description: "Extraire des informations d'images et de documents avec Azure AI Vision et Azure AI Document Intelligence.",
+    skills: [
+      "Azure AI Vision (OCR, image analysis, object detection)",
+      "Face API & multimodal models",
+      "Spatial analysis",
+      "Azure AI Document Intelligence (prebuilt & custom)",
+      "Layout model, factures, reçus, tables",
+      "Confidence scores & human review"
+    ]
+  }
+];
+
+const moduleIndex = Object.fromEntries(modules.map(m => [m.id, m]));
+const MODULE_EXAMS = 5;   // examens blancs par module
+const FINAL_EXAMS = 10;   // examens finaux
+const MODULE_Q = 25;      // questions cibles par examen module
+const FINAL_Q = 50;       // questions cibles par examen final
+const PASS = 70;          // seuil de réussite %
+const DIFF_DIST = { facile: 0.20, intermédiaire: 0.50, difficile: 0.30 };
+
+/* -------------------- 2. BANQUE DE QUESTIONS -------------------- */
+/* answerKind : 'single' | 'multiple' | 'order'
+   correctAnswers : indices (single/multiple) OU ordre attendu des index (order) */
+const baseQuestions = [
+  /* ===== MODULE 1 — Generative AI apps ===== */
+  {
+    id: "m1q1", module: "m1", type: "QCM simple", difficulty: "facile", answerKind: "single",
+    question: "Quel service Azure permet de déployer et d'appeler des modèles GPT pour générer du texte via une API ?",
+    context: "",
+    options: ["Azure AI Language", "Azure OpenAI Service", "Azure AI Search", "Azure Machine Learning Designer"],
+    correctAnswers: [1],
+    explanation: "Azure OpenAI Service héberge les modèles de la famille GPT (chat completions, embeddings, etc.) et expose une API REST et un Python SDK pour les consommer.",
+    wrongAnswersExplanation: "Azure AI Language fait de l'analyse de texte (sentiment, entités), pas de génération. Azure AI Search est un moteur de recherche/indexation. Azure ML Designer sert à construire des pipelines ML, pas à servir des LLM managés.",
+    examTip: "Quand l'énoncé parle de 'génération de texte', 'GPT', 'chat completions' ou 'embeddings', pensez Azure OpenAI Service.",
+    realWorldExample: "Une entreprise crée un assistant interne de rédaction d'e-mails : elle déploie GPT-4o sur Azure OpenAI Service et appelle l'endpoint chat completions.",
+    tags: ["Azure OpenAI Service", "déploiement"]
+  },
+  {
+    id: "m1q2", module: "m1", type: "Choisir le meilleur service Azure", difficulty: "intermédiaire", answerKind: "single",
+    question: "Vous devez implémenter un système qui répond aux questions des employés en s'appuyant sur les documents internes de l'entreprise. Quelle approche est la plus adaptée ?",
+    context: "Les documents changent fréquemment et ne doivent pas être intégrés dans le modèle.",
+    options: [
+      "Fine-tuner GPT-4 sur tous les documents internes",
+      "Utiliser un pattern RAG : indexer les documents dans Azure AI Search puis fournir les passages pertinents au modèle",
+      "Augmenter la taille du prompt système avec tous les documents",
+      "Utiliser uniquement le mode JSON structured output"
+    ],
+    correctAnswers: [1],
+    explanation: "Le pattern RAG (Retrieval-Augmented Generation) récupère dynamiquement les passages pertinents via Azure AI Search et les injecte dans le prompt (grounding). C'est idéal pour des données qui changent souvent.",
+    wrongAnswersExplanation: "Le fine-tuning est coûteux et inadapté à des données changeantes. Mettre tous les documents dans le prompt dépasse la fenêtre de contexte et coûte cher en tokens. Le structured output ne résout pas le problème du grounding.",
+    examTip: "RAG = données qui changent + besoin de citer des sources. Fine-tuning = changer le style/format de réponse, pas ajouter des connaissances fraîches.",
+    realWorldExample: "Un service RH déploie un chatbot qui répond sur la politique de congés en récupérant les paragraphes pertinents du règlement intérieur indexé dans Azure AI Search.",
+    tags: ["RAG", "Azure AI Search", "grounding"]
+  },
+  {
+    id: "m1q3", module: "m1", type: "Question Python SDK", difficulty: "intermédiaire", answerKind: "single",
+    question: "Avec le SDK Python `openai` configuré pour Azure, quel paramètre identifie le déploiement de modèle à utiliser dans un appel chat completions ?",
+    context: "",
+    options: [
+      "Le paramètre `model` doit contenir le nom du déploiement (deployment name)",
+      "Le paramètre `engine_id` doit contenir l'ID de la souscription",
+      "Le paramètre `resource_group` doit être renseigné",
+      "Le paramètre `region` doit contenir le nom du modèle"
+    ],
+    correctAnswers: [0],
+    explanation: "Sur Azure OpenAI, le paramètre `model` de `client.chat.completions.create(...)` doit recevoir le **nom du déploiement** que vous avez créé dans Azure AI Foundry, et non le nom brut du modèle.",
+    wrongAnswersExplanation: "Il n'existe pas de paramètre `engine_id`, `resource_group` ni `region` dans l'appel chat completions. L'endpoint et la clé/identité sont configurés au niveau du client.",
+    examTip: "Différence clé Azure vs OpenAI public : sur Azure, `model` = nom du déploiement, pas le nom du modèle.",
+    realWorldExample: "Un dev déploie GPT-4o sous le nom 'gpt4o-prod' ; son code appelle `model='gpt4o-prod'`.",
+    tags: ["Python SDK", "Azure OpenAI Service", "déploiement"]
+  },
+  {
+    id: "m1q4", module: "m1", type: "QCM à réponses multiples", difficulty: "difficile", answerKind: "multiple",
+    question: "Quelles affirmations concernant les embeddings dans Azure OpenAI sont correctes ? (Choisissez deux réponses)",
+    context: "",
+    options: [
+      "Un embedding transforme un texte en vecteur numérique de dimension fixe",
+      "Les embeddings sont utilisés pour mesurer la similarité sémantique entre textes",
+      "Le modèle d'embedding génère directement du texte en langage naturel",
+      "Les embeddings remplacent le besoin d'un modèle de chat pour répondre aux questions"
+    ],
+    correctAnswers: [0, 1],
+    explanation: "Un modèle d'embedding (ex. text-embedding-3-large) convertit un texte en vecteur de dimension fixe. Ces vecteurs permettent de comparer la similarité sémantique (recherche vectorielle, RAG).",
+    wrongAnswersExplanation: "Les embeddings ne génèrent pas de texte (c'est le rôle des modèles de chat). Ils ne remplacent pas le modèle de chat : dans RAG, on combine recherche vectorielle (embeddings) ET génération (chat).",
+    examTip: "Embedding = vecteur pour la similarité/recherche. Chat completion = génération de texte. Les deux sont complémentaires dans RAG.",
+    realWorldExample: "Pour un moteur de recherche sémantique de FAQ, on calcule l'embedding de chaque question puis on compare par similarité cosinus.",
+    tags: ["embeddings", "RAG", "Azure OpenAI Service"]
+  },
+  {
+    id: "m1q5", module: "m1", type: "Question de sécurité", difficulty: "intermédiaire", answerKind: "single",
+    question: "Quelle est la méthode d'authentification recommandée par Microsoft pour qu'une application Azure appelle Azure OpenAI Service sans gérer de clés en clair ?",
+    context: "",
+    options: [
+      "Stocker la clé API dans le code source",
+      "Utiliser une managed identity avec Microsoft Entra ID et RBAC",
+      "Partager la clé via une variable d'environnement publique",
+      "Désactiver l'authentification pour les appels internes"
+    ],
+    correctAnswers: [1],
+    explanation: "Les managed identities (Microsoft Entra ID) permettent à l'application de s'authentifier sans stocker de secret. On attribue le rôle RBAC 'Cognitive Services OpenAI User' à l'identité.",
+    wrongAnswersExplanation: "Stocker une clé dans le code ou la partager publiquement expose des secrets. Désactiver l'authentification est une faille de sécurité majeure.",
+    examTip: "Authentification sans secret = managed identity + RBAC. Si on vous parle de 'clé en clair', c'est la mauvaise réponse.",
+    realWorldExample: "Une App Service appelle Azure OpenAI via sa managed identity ; aucune clé n'est stockée, et l'accès est révocable via RBAC.",
+    tags: ["sécurité", "managed identities", "RBAC"]
+  },
+  {
+    id: "m1q6", module: "m1", type: "Identifier l'erreur dans le code", difficulty: "difficile", answerKind: "single",
+    question: "Le code Python suivant pour activer le structured output JSON échoue. Quelle est l'erreur ?",
+    context: "",
+    code: "resp = client.chat.completions.create(\n    model='gpt4o',\n    messages=msgs,\n    response_format='json'\n)",
+    options: [
+      "`response_format` doit être un objet, par ex. `{ \"type\": \"json_object\" }`, pas une chaîne",
+      "Le paramètre `messages` doit s'appeler `prompt`",
+      "Il manque le paramètre `temperature` qui est obligatoire",
+      "Le nom de la méthode devrait être `create_completion`"
+    ],
+    correctAnswers: [0],
+    explanation: "`response_format` attend un objet, par exemple `{ \"type\": \"json_object\" }` (ou un json_schema). Passer la chaîne `'json'` provoque une erreur de validation.",
+    wrongAnswersExplanation: "`messages` est le bon nom pour l'API chat completions. `temperature` est optionnel. La méthode `chat.completions.create` est correcte.",
+    examTip: "Pour forcer du JSON valide : `response_format={'type':'json_object'}` et précisez 'JSON' dans le prompt.",
+    realWorldExample: "Un service d'extraction de données structurées force `json_object` pour garantir un parsing fiable côté application.",
+    tags: ["structured outputs", "Python SDK"]
+  },
+  {
+    id: "m1q7", module: "m1", type: "Question de monitoring", difficulty: "facile", answerKind: "single",
+    question: "Quel service Azure permet de collecter les métriques, logs et alertes d'un déploiement Azure OpenAI ?",
+    context: "",
+    options: ["Azure Monitor", "Azure DevOps", "Azure Policy", "Azure Key Vault"],
+    correctAnswers: [0],
+    explanation: "Azure Monitor centralise métriques, logs et alertes pour les ressources Azure, y compris les déploiements Azure OpenAI (latence, tokens consommés, erreurs).",
+    wrongAnswersExplanation: "Azure DevOps gère le CI/CD. Azure Policy applique la gouvernance. Key Vault stocke des secrets. Aucun ne fait du monitoring de métriques d'exécution.",
+    examTip: "Monitoring/observabilité d'une ressource Azure = Azure Monitor (et Log Analytics pour les requêtes de logs).",
+    realWorldExample: "Une équipe configure une alerte Azure Monitor quand la consommation de tokens dépasse un seuil pour maîtriser les coûts.",
+    tags: ["monitoring", "Azure Monitor"]
+  },
+  {
+    id: "m1q8", module: "m1", type: "Étude de cas entreprise", difficulty: "difficile", answerKind: "multiple",
+    question: "Une banque déploie un assistant RAG. Quelles mesures réduisent le risque de réponses inappropriées et protègent les données ? (Choisissez deux réponses)",
+    context: "L'assistant traite des questions clients et ne doit jamais divulguer de données d'autres clients ni produire de contenu nuisible.",
+    options: [
+      "Activer Azure AI Content Safety pour filtrer entrées et sorties",
+      "Filtrer les documents récupérés selon les permissions de l'utilisateur avant de les passer au modèle",
+      "Augmenter la température à 1.5 pour des réponses plus créatives",
+      "Désactiver tous les filtres de contenu pour accélérer les réponses"
+    ],
+    correctAnswers: [0, 1],
+    explanation: "Azure AI Content Safety filtre le contenu nuisible en entrée/sortie. Le filtrage des documents par permissions (security trimming) évite de divulguer des données auxquelles l'utilisateur n'a pas droit.",
+    wrongAnswersExplanation: "Augmenter la température accroît l'imprévisibilité (mauvais pour la fiabilité). Désactiver les filtres de contenu augmente le risque, l'inverse de l'objectif.",
+    examTip: "Sécurité d'un RAG = Content Safety (contenu) + security trimming (accès aux données) + grounding pour limiter les hallucinations.",
+    realWorldExample: "Une banque applique un filtre par identité sur l'index Azure AI Search afin que chaque client ne voie que ses propres documents.",
+    tags: ["safety", "Azure AI Content Safety", "sécurité", "RAG"]
+  },
+
+  /* ===== MODULE 2 — AI agents ===== */
+  {
+    id: "m2q1", module: "m2", type: "QCM simple", difficulty: "facile", answerKind: "single",
+    question: "Quel service Azure est spécifiquement conçu pour créer, héberger et exécuter des agents IA avec des outils (tools) ?",
+    context: "",
+    options: ["Azure AI Agent Service", "Azure Functions", "Azure Logic Apps", "Azure Batch"],
+    correctAnswers: [0],
+    explanation: "Azure AI Agent Service (dans Azure AI Foundry) fournit un runtime managé pour créer des agents capables d'utiliser des tools, de la mémoire (threads) et du grounding.",
+    wrongAnswersExplanation: "Azure Functions exécute du code serverless, Logic Apps orchestre des workflows, Azure Batch fait du calcul parallèle. Aucun n'est un runtime d'agents IA.",
+    examTip: "Agents managés + tools + threads = Azure AI Agent Service dans Azure AI Foundry.",
+    realWorldExample: "Une entreprise déploie un agent de support qui interroge une base de connaissances et crée des tickets via un tool.",
+    tags: ["Azure AI Agent Service", "agents", "Azure AI Foundry"]
+  },
+  {
+    id: "m2q2", module: "m2", type: "Question d'architecture Azure", difficulty: "intermédiaire", answerKind: "single",
+    question: "Dans un agent Azure AI, quel mécanisme permet au modèle de déclencher l'exécution d'une fonction définie par le développeur (ex. interroger une API météo) ?",
+    context: "",
+    options: [
+      "Function calling (l'agent renvoie un appel d'outil que l'application exécute)",
+      "Embeddings",
+      "Fine-tuning",
+      "Content filtering"
+    ],
+    correctAnswers: [0],
+    explanation: "Le function calling permet au modèle de retourner un appel structuré (nom de fonction + arguments) que l'application exécute, puis renvoie le résultat à l'agent pour poursuivre.",
+    wrongAnswersExplanation: "Les embeddings servent à la similarité. Le fine-tuning modifie le modèle. Le content filtering modère le contenu. Aucun ne déclenche d'outil.",
+    examTip: "Function calling / tools = la façon dont un agent agit sur le monde extérieur (API, bases, calculs).",
+    realWorldExample: "Un agent de voyage appelle un tool `get_flights(origin, dest, date)` exposé par l'application.",
+    tags: ["function calling", "tools", "agents"]
+  },
+  {
+    id: "m2q3", module: "m2", type: "Choisir le meilleur service Azure", difficulty: "intermédiaire", answerKind: "single",
+    question: "Vous devez orchestrer plusieurs agents spécialisés (un planificateur, un chercheur, un rédacteur) en code Python avec une logique d'orchestration fine. Quel framework Microsoft est le plus adapté ?",
+    context: "",
+    options: ["Semantic Kernel", "Azure AI Search", "Azure Data Factory", "Azure AI Language"],
+    correctAnswers: [0],
+    explanation: "Semantic Kernel est le SDK d'orchestration de Microsoft pour composer des plugins, des fonctions et coordonner plusieurs agents avec une logique programmable.",
+    wrongAnswersExplanation: "Azure AI Search indexe des données, Data Factory fait de l'ETL, Azure AI Language analyse du texte. Aucun n'est un framework d'orchestration d'agents.",
+    examTip: "Orchestration d'agents en code = Semantic Kernel. Agents managés clé en main = Azure AI Agent Service.",
+    realWorldExample: "Une équipe construit un pipeline rédactionnel multi-agents (recherche → plan → rédaction) coordonné par Semantic Kernel.",
+    tags: ["Semantic Kernel", "multi-agent orchestration", "orchestration"]
+  },
+  {
+    id: "m2q4", module: "m2", type: "QCM simple", difficulty: "intermédiaire", answerKind: "single",
+    question: "Que désigne MCP (Model Context Protocol) dans le contexte des agents ?",
+    context: "",
+    options: [
+      "Un protocole standard permettant aux agents/LLM de se connecter à des sources de données et outils externes",
+      "Un type de modèle de vision multimodal",
+      "Un mode de chiffrement des prompts",
+      "Une métrique de coût par token"
+    ],
+    correctAnswers: [0],
+    explanation: "MCP (Model Context Protocol) est un protocole ouvert standardisant la connexion entre les modèles/agents et des serveurs d'outils et de données externes.",
+    wrongAnswersExplanation: "MCP n'est ni un modèle de vision, ni un chiffrement, ni une métrique de coût. C'est une couche d'intégration outils/données.",
+    examTip: "MCP = brancher des outils/données externes de façon standardisée sur un agent.",
+    realWorldExample: "Un agent se connecte via un serveur MCP à un système de fichiers d'entreprise et à une base SQL.",
+    tags: ["MCP", "tools", "grounding"]
+  },
+  {
+    id: "m2q5", module: "m2", type: "Question d'ordre logique", difficulty: "difficile", answerKind: "order",
+    question: "Remettez dans le bon ordre les étapes du cycle d'exécution d'un agent avec function calling.",
+    context: "Reconstituez la séquence du début (1) à la fin.",
+    options: [
+      "L'utilisateur envoie un message à l'agent",
+      "Le modèle décide d'appeler un tool et renvoie les arguments",
+      "L'application exécute la fonction et renvoie le résultat au modèle",
+      "Le modèle génère la réponse finale en langage naturel"
+    ],
+    correctAnswers: [0, 1, 2, 3],
+    explanation: "Le flux : 1) message utilisateur → 2) le modèle propose un appel d'outil → 3) l'app exécute et renvoie le résultat → 4) le modèle formule la réponse finale.",
+    wrongAnswersExplanation: "Inverser l'exécution de la fonction et la décision du modèle casse le cycle : le modèle doit d'abord demander l'outil avant que l'app ne l'exécute.",
+    examTip: "Mémorisez la boucle : message → tool call → exécution → réponse. Elle peut se répéter plusieurs fois.",
+    realWorldExample: "Un agent météo : 'quel temps à Paris ?' → tool get_weather('Paris') → 18°C → 'Il fait 18°C à Paris.'",
+    tags: ["function calling", "agents", "orchestration"]
+  },
+  {
+    id: "m2q6", module: "m2", type: "Question de sécurité", difficulty: "difficile", answerKind: "multiple",
+    question: "Quelles pratiques renforcent la sécurité d'un agent qui exécute des tools sur des systèmes d'entreprise ? (Choisissez deux réponses)",
+    context: "",
+    options: [
+      "Appliquer le principe du moindre privilège aux identités utilisées par les tools",
+      "Valider et borner les arguments d'appel d'outils avant exécution",
+      "Donner à l'agent un accès administrateur global pour éviter les erreurs",
+      "Désactiver la journalisation des actions de l'agent"
+    ],
+    correctAnswers: [0, 1],
+    explanation: "Le moindre privilège limite l'impact d'un abus, et la validation des arguments empêche des appels dangereux (injection, suppression non voulue).",
+    wrongAnswersExplanation: "Un accès admin global viole le moindre privilège. Désactiver la journalisation supprime la traçabilité, indispensable pour l'audit et la détection.",
+    examTip: "Sécurité d'agent : moindre privilège + validation des entrées d'outils + journalisation/audit.",
+    realWorldExample: "Un agent qui peut supprimer des fichiers est restreint à un dossier précis, et chaque action est journalisée.",
+    tags: ["sécurité", "agents", "tools"]
+  },
+  {
+    id: "m2q7", module: "m2", type: "Question de performance", difficulty: "intermédiaire", answerKind: "single",
+    question: "Pour évaluer la qualité des réponses d'un agent de façon systématique avant la mise en production, quelle approche Azure AI Foundry est recommandée ?",
+    context: "",
+    options: [
+      "Utiliser les évaluations (evaluations) intégrées d'Azure AI Foundry avec des jeux de données de test et des métriques (groundedness, relevance, etc.)",
+      "Augmenter simplement le nombre de tokens max",
+      "Supprimer le grounding pour gagner en vitesse",
+      "Tester manuellement une seule question avant la prod"
+    ],
+    correctAnswers: [0],
+    explanation: "Azure AI Foundry propose des évaluations automatisées (groundedness, relevance, coherence, safety…) sur des jeux de données, pour mesurer objectivement la qualité avant déploiement.",
+    wrongAnswersExplanation: "Augmenter les tokens ne mesure pas la qualité. Supprimer le grounding dégrade la fiabilité. Un seul test manuel n'est pas représentatif.",
+    examTip: "Évaluation d'agents/LLM = feature 'evaluations' d'Azure AI Foundry, avec dataset + métriques.",
+    realWorldExample: "Avant de livrer, une équipe lance une évaluation groundedness sur 200 cas pour détecter les hallucinations.",
+    tags: ["évaluation des agents", "Azure AI Foundry", "performance"]
+  },
+  {
+    id: "m2q8", module: "m2", type: "QCM simple", difficulty: "facile", answerKind: "single",
+    question: "Dans Azure AI Agent Service, qu'est-ce qu'un 'thread' ?",
+    context: "",
+    options: [
+      "Une conversation persistante qui conserve l'historique des messages entre l'utilisateur et l'agent",
+      "Un thread CPU pour le calcul parallèle",
+      "Un modèle d'embedding",
+      "Un fichier de configuration RBAC"
+    ],
+    correctAnswers: [0],
+    explanation: "Un thread représente une conversation persistante : il stocke l'historique des messages, ce qui donne de la mémoire à l'agent au fil des échanges.",
+    wrongAnswersExplanation: "Ce n'est pas un thread CPU, ni un modèle, ni un fichier RBAC. C'est l'unité de conversation/mémoire de l'agent.",
+    examTip: "Thread = conversation + mémoire dans Azure AI Agent Service.",
+    realWorldExample: "Un agent support rouvre le thread d'un client pour se souvenir du contexte de la demande précédente.",
+    tags: ["agents", "mémoire", "Azure AI Agent Service"]
+  },
+
+  /* ===== MODULE 3 — Natural language ===== */
+  {
+    id: "m3q1", module: "m3", type: "QCM simple", difficulty: "facile", answerKind: "single",
+    question: "Quel service Azure fournit l'analyse de sentiment, l'extraction de phrases clés et la reconnaissance d'entités sur du texte ?",
+    context: "",
+    options: ["Azure AI Language", "Azure OpenAI Service", "Azure AI Vision", "Azure AI Document Intelligence"],
+    correctAnswers: [0],
+    explanation: "Azure AI Language regroupe les capacités de NLP préconstruites : sentiment, key phrases, NER, PII, détection de langue, résumé, classification.",
+    wrongAnswersExplanation: "Azure OpenAI génère du texte, Azure AI Vision traite des images, Document Intelligence extrait des données de documents.",
+    examTip: "Tâches NLP préconstruites (sentiment, entités, PII) = Azure AI Language.",
+    realWorldExample: "Une entreprise analyse le sentiment de milliers d'avis clients via Azure AI Language.",
+    tags: ["Azure AI Language", "sentiment analysis"]
+  },
+  {
+    id: "m3q2", module: "m3", type: "Choisir le meilleur service Azure", difficulty: "intermédiaire", answerKind: "single",
+    question: "Vous devez détecter et masquer automatiquement les numéros de sécurité sociale et adresses e-mail dans des documents texte. Quelle fonctionnalité utiliser ?",
+    context: "",
+    options: [
+      "PII detection (Personally Identifiable Information) d'Azure AI Language",
+      "Key phrase extraction",
+      "Language detection",
+      "Sentiment analysis"
+    ],
+    correctAnswers: [0],
+    explanation: "La détection PII d'Azure AI Language identifie et peut masquer (redaction) les informations personnelles : noms, e-mails, numéros, etc.",
+    wrongAnswersExplanation: "Les phrases clés, la détection de langue et le sentiment ne masquent pas d'informations personnelles.",
+    examTip: "Masquer/détecter des données personnelles = PII detection (avec option de redaction).",
+    realWorldExample: "Un cabinet anonymise les dossiers avant de les partager à un sous-traitant grâce à la redaction PII.",
+    tags: ["PII detection", "Azure AI Language", "sécurité"]
+  },
+  {
+    id: "m3q3", module: "m3", type: "Question REST API", difficulty: "intermédiaire", answerKind: "single",
+    question: "Pour appeler Azure AI Language en REST, quel en-tête HTTP transmet la clé d'authentification du service ?",
+    context: "",
+    options: [
+      "`Ocp-Apim-Subscription-Key`",
+      "`Authorization: Basic`",
+      "`X-Api-Token`",
+      "`Content-Md5`"
+    ],
+    correctAnswers: [0],
+    explanation: "Les services Azure AI (Cognitive Services) utilisent l'en-tête `Ocp-Apim-Subscription-Key` pour transmettre la clé. On peut aussi utiliser un token Entra ID via `Authorization: Bearer`.",
+    wrongAnswersExplanation: "`Authorization: Basic`, `X-Api-Token` et `Content-Md5` ne sont pas les mécanismes d'auth des services Azure AI par clé.",
+    examTip: "Clé d'un service Azure AI en REST = en-tête `Ocp-Apim-Subscription-Key`.",
+    realWorldExample: "Un script curl analyse un avis client en envoyant la clé via `Ocp-Apim-Subscription-Key`.",
+    tags: ["REST API", "Azure AI Language", "sécurité"]
+  },
+  {
+    id: "m3q4", module: "m3", type: "QCM à réponses multiples", difficulty: "difficile", answerKind: "multiple",
+    question: "Quelles affirmations sur la Custom Text Classification d'Azure AI Language sont correctes ? (Choisissez deux réponses)",
+    context: "",
+    options: [
+      "Elle nécessite des données d'entraînement étiquetées par l'utilisateur",
+      "Elle supporte la classification single-label et multi-label",
+      "Elle ne nécessite aucun entraînement et fonctionne immédiatement",
+      "Elle ne peut classer que des images"
+    ],
+    correctAnswers: [0, 1],
+    explanation: "La classification de texte personnalisée s'entraîne sur vos données étiquetées et propose des projets single-label (une catégorie) ou multi-label (plusieurs catégories).",
+    wrongAnswersExplanation: "Elle requiert un entraînement (ce n'est pas un modèle prêt à l'emploi). Elle traite du texte, pas des images.",
+    examTip: "Custom = vous fournissez des données étiquetées et vous entraînez. Prebuilt = prêt à l'emploi.",
+    realWorldExample: "Un support trie automatiquement les tickets entrants en catégories métier grâce à un modèle multi-label entraîné.",
+    tags: ["custom text classification", "Azure AI Language"]
+  },
+  {
+    id: "m3q5", module: "m3", type: "QCM simple", difficulty: "intermédiaire", answerKind: "single",
+    question: "Quelle fonctionnalité d'Azure AI Language permet de construire un modèle de compréhension d'intentions et d'entités pour un chatbot (ex. 'réserver un vol') ?",
+    context: "",
+    options: [
+      "Conversational Language Understanding (CLU)",
+      "Summarization",
+      "Language detection",
+      "Key phrase extraction"
+    ],
+    correctAnswers: [0],
+    explanation: "CLU (Conversational Language Understanding) permet de définir des intents et des entities pour interpréter le langage des utilisateurs dans des applications conversationnelles.",
+    wrongAnswersExplanation: "La summarization résume, la détection de langue identifie la langue, les phrases clés extraient des mots-clés : aucun ne modélise des intents.",
+    examTip: "Intents + entities pour un bot = CLU (anciennement LUIS).",
+    realWorldExample: "Un assistant bancaire reconnaît l'intent 'consulter_solde' et l'entité 'compte_épargne'.",
+    tags: ["conversational language understanding", "Azure AI Language"]
+  },
+  {
+    id: "m3q6", module: "m3", type: "Identifier l'erreur dans le code", difficulty: "difficile", answerKind: "single",
+    question: "Ce code Python utilisant le SDK Azure AI Language ne s'authentifie pas correctement. Quel est le problème ?",
+    context: "",
+    code: "from azure.ai.textanalytics import TextAnalyticsClient\nfrom azure.core.credentials import AzureKeyCredential\n\nclient = TextAnalyticsClient(\n    endpoint=endpoint,\n    credential=key\n)",
+    options: [
+      "`credential` doit être un objet `AzureKeyCredential(key)`, pas la chaîne brute `key`",
+      "Il faut importer `pandas` pour utiliser le client",
+      "`endpoint` doit être passé en second argument positionnel",
+      "Le client n'existe pas, il faut utiliser `LanguageClient`"
+    ],
+    correctAnswers: [0],
+    explanation: "Le paramètre `credential` attend un objet credential, par ex. `AzureKeyCredential(key)` (importé ici mais non utilisé), et non la chaîne de la clé.",
+    wrongAnswersExplanation: "pandas n'a rien à voir. `endpoint` est correctement nommé. `TextAnalyticsClient` est bien la classe pour Azure AI Language.",
+    examTip: "Avec les SDK Azure : `credential=AzureKeyCredential(key)` ou `DefaultAzureCredential()`, jamais la clé en chaîne brute.",
+    realWorldExample: "Un dev corrige son client en passant `AzureKeyCredential(key)` et l'appel d'analyse fonctionne.",
+    tags: ["Python SDK", "Azure AI Language", "sécurité"]
+  },
+  {
+    id: "m3q7", module: "m3", type: "Question de coût", difficulty: "facile", answerKind: "single",
+    question: "Pour traiter ponctuellement quelques centaines de documents avec Azure AI Language sans engagement, quel niveau tarifaire est le plus adapté pour démarrer ?",
+    context: "",
+    options: [
+      "Le tier Free (F0) pour tester, puis Standard (S) selon le volume",
+      "Un cluster GPU dédié 24/7",
+      "Une instance Azure VM série N",
+      "Le tier Premium SQL"
+    ],
+    correctAnswers: [0],
+    explanation: "Azure AI Language propose un tier gratuit (F0) limité pour tester, puis un tier Standard payé à l'usage selon le nombre d'enregistrements de texte traités.",
+    wrongAnswersExplanation: "Les GPU, VM série N et SQL Premium ne sont pas des modèles de tarification d'Azure AI Language et seraient surdimensionnés/inadaptés.",
+    examTip: "Optimisation de coût : commencer en Free pour tester, passer en Standard (pay-as-you-go) pour la prod.",
+    realWorldExample: "Une startup prototype son analyse de sentiment en F0, puis bascule en S0 au lancement.",
+    tags: ["coût", "Azure AI Language"]
+  },
+  {
+    id: "m3q8", module: "m3", type: "QCM simple", difficulty: "intermédiaire", answerKind: "single",
+    question: "Quelle capacité d'Azure AI Language produit un résumé court à partir d'un long document ou d'une conversation ?",
+    context: "",
+    options: ["Summarization (extractive et abstractive)", "Sentiment analysis", "PII detection", "Language detection"],
+    correctAnswers: [0],
+    explanation: "La summarization d'Azure AI Language propose un résumé extractif (phrases clés du texte) ou abstractif (reformulé), ainsi qu'un résumé de conversations.",
+    wrongAnswersExplanation: "Le sentiment évalue la polarité, la PII détecte des données personnelles, la détection de langue identifie la langue : aucun ne résume.",
+    examTip: "Résumer = summarization (extractive vs abstractive). Conversation summarization existe aussi.",
+    realWorldExample: "Un centre d'appels résume automatiquement chaque conversation pour le compte-rendu agent.",
+    tags: ["summarization", "Azure AI Language"]
+  },
+
+  /* ===== MODULE 4 — Vision & Documents ===== */
+  {
+    id: "m4q1", module: "m4", type: "QCM simple", difficulty: "facile", answerKind: "single",
+    question: "Quel service Azure permet d'extraire du texte imprimé et manuscrit à partir d'images (OCR) ?",
+    context: "",
+    options: ["Azure AI Vision (Read / OCR)", "Azure AI Language", "Azure OpenAI Service", "Azure AI Search"],
+    correctAnswers: [0],
+    explanation: "Azure AI Vision fournit l'OCR (API Read) pour extraire le texte imprimé et manuscrit d'images et de documents.",
+    wrongAnswersExplanation: "Azure AI Language traite du texte déjà numérique, Azure OpenAI génère du texte, Azure AI Search indexe des données.",
+    examTip: "Lire du texte dans une image = OCR d'Azure AI Vision. Extraire des champs structurés d'un document = Document Intelligence.",
+    realWorldExample: "Une application numérise des notes manuscrites en texte éditable via l'API Read.",
+    tags: ["OCR", "Azure AI Vision"]
+  },
+  {
+    id: "m4q2", module: "m4", type: "Choisir le meilleur service Azure", difficulty: "intermédiaire", answerKind: "single",
+    question: "Vous devez extraire automatiquement le montant total, la date et le fournisseur depuis des factures de formats variés. Quel service et modèle utiliser ?",
+    context: "",
+    options: [
+      "Azure AI Document Intelligence — modèle prebuilt 'invoice'",
+      "Azure AI Vision — object detection",
+      "Azure AI Language — NER",
+      "Azure OpenAI — embeddings"
+    ],
+    correctAnswers: [0],
+    explanation: "Le modèle prebuilt 'invoice' d'Azure AI Document Intelligence extrait directement des champs structurés (total, date, fournisseur, lignes) avec des scores de confiance.",
+    wrongAnswersExplanation: "L'object detection localise des objets, le NER analyse du texte brut sans la structure d'une facture, les embeddings ne font pas d'extraction de champs.",
+    examTip: "Factures, reçus, cartes d'identité, formulaires structurés = modèles prebuilt d'Azure AI Document Intelligence.",
+    realWorldExample: "Un service comptable automatise la saisie des factures fournisseurs avec le prebuilt invoice.",
+    tags: ["Azure AI Document Intelligence", "factures", "prebuilt models"]
+  },
+  {
+    id: "m4q3", module: "m4", type: "QCM simple", difficulty: "intermédiaire", answerKind: "single",
+    question: "Quel modèle d'Azure AI Document Intelligence extrait la structure d'un document — texte, tables et cases à cocher — sans être spécialisé sur un type de document ?",
+    context: "",
+    options: ["Le modèle Layout", "Le modèle Invoice", "Le modèle Receipt", "Le modèle Business Card"],
+    correctAnswers: [0],
+    explanation: "Le modèle Layout extrait le texte, les tables, les structures et les selection marks (cases à cocher) de tout document, sans cibler un type précis.",
+    wrongAnswersExplanation: "Invoice, Receipt et Business Card sont des prebuilt spécialisés sur un type de document donné.",
+    examTip: "Besoin de tables et de structure générique = modèle Layout. Type de document précis = prebuilt dédié.",
+    realWorldExample: "Une équipe extrait les tableaux de rapports PDF hétérogènes avec le modèle Layout.",
+    tags: ["layout model", "tables", "Azure AI Document Intelligence"]
+  },
+  {
+    id: "m4q4", module: "m4", type: "Question de monitoring", difficulty: "difficile", answerKind: "single",
+    question: "Un modèle d'extraction custom retourne des champs avec un faible score de confiance. Quelle est la meilleure pratique ?",
+    context: "Certaines factures sont mal scannées et l'extraction est incertaine.",
+    options: [
+      "Mettre en place une étape de human review pour les résultats dont le confidence score est sous un seuil défini",
+      "Ignorer les scores de confiance et accepter tous les résultats",
+      "Supprimer les documents au faible score sans vérification",
+      "Augmenter la résolution n'a aucun effet, donc ne rien faire"
+    ],
+    correctAnswers: [0],
+    explanation: "On définit un seuil de confiance : en dessous, les extractions sont routées vers une human review (validation humaine) pour garantir la qualité.",
+    wrongAnswersExplanation: "Accepter aveuglément ou supprimer sans vérifier dégrade la fiabilité. Une meilleure qualité d'image améliore aussi les scores, donc 'ne rien faire' est faux.",
+    examTip: "Faible confidence score = boucle de human review. C'est un pilier de la Responsible AI dans l'extraction.",
+    realWorldExample: "Les factures sous 0,80 de confiance sont mises en file de validation manuelle avant intégration comptable.",
+    tags: ["confidence scores", "human review", "Azure AI Document Intelligence"]
+  },
+  {
+    id: "m4q5", module: "m4", type: "Étude de cas entreprise", difficulty: "difficile", answerKind: "order",
+    question: "Remettez dans l'ordre les étapes d'un pipeline d'extraction de factures déposées par les fournisseurs.",
+    context: "Du dépôt du fichier jusqu'au stockage des données extraites (1 à 4).",
+    options: [
+      "Le fournisseur dépose la facture (PDF) dans un conteneur Azure Blob Storage",
+      "Un déclencheur appelle Azure AI Document Intelligence (modèle invoice)",
+      "Les champs extraits et les scores de confiance sont validés (human review si faible)",
+      "Les données structurées sont écrites dans la base/entrepôt"
+    ],
+    correctAnswers: [0, 1, 2, 3],
+    explanation: "Pipeline type : dépôt Blob → extraction Document Intelligence → validation (human review conditionnelle) → écriture en base.",
+    wrongAnswersExplanation: "Écrire en base avant l'extraction ou la validation n'a pas de sens : il faut d'abord extraire puis valider la confiance.",
+    examTip: "Pipeline d'extraction = Blob (entrée) → Document Intelligence → contrôle confiance/human review → stockage.",
+    realWorldExample: "Une PME automatise sa comptabilité fournisseurs : dépôt sur Blob, extraction, validation des cas douteux, écriture en ERP.",
+    tags: ["pipeline d'extraction", "Azure Blob Storage", "Azure AI Document Intelligence"]
+  },
+  {
+    id: "m4q6", module: "m4", type: "QCM à réponses multiples", difficulty: "intermédiaire", answerKind: "multiple",
+    question: "Quelles capacités fait partie d'Azure AI Vision ? (Choisissez deux réponses)",
+    context: "",
+    options: [
+      "Image analysis (description, tags, détection d'objets)",
+      "OCR (extraction de texte des images)",
+      "Extraction de champs d'une facture avec scores de confiance",
+      "Analyse de sentiment d'un texte"
+    ],
+    correctAnswers: [0, 1],
+    explanation: "Azure AI Vision couvre l'analyse d'image (tags, description, objets) et l'OCR. L'extraction de factures relève de Document Intelligence, le sentiment d'Azure AI Language.",
+    wrongAnswersExplanation: "L'extraction structurée de factures = Document Intelligence. Le sentiment = Azure AI Language. Ce ne sont pas des fonctions d'Azure AI Vision.",
+    examTip: "Vision = pixels/images (objets, OCR, descriptions). Document Intelligence = documents structurés (champs, tables).",
+    realWorldExample: "Une app de modération génère des tags et descriptions d'images uploadées via Azure AI Vision.",
+    tags: ["Azure AI Vision", "image analysis", "OCR"]
+  },
+  {
+    id: "m4q7", module: "m4", type: "Question de sécurité", difficulty: "intermédiaire", answerKind: "single",
+    question: "Pour stocker des documents sensibles à traiter par Document Intelligence en limitant l'exposition réseau, quelle mesure appliquer sur le compte Azure Blob Storage ?",
+    context: "",
+    options: [
+      "Utiliser des private endpoints et restreindre l'accès réseau, avec accès via managed identity",
+      "Rendre le conteneur public en lecture pour simplifier l'accès",
+      "Partager une clé SAS permanente sans expiration par e-mail",
+      "Désactiver le chiffrement au repos"
+    ],
+    correctAnswers: [0],
+    explanation: "Les private endpoints maintiennent le trafic sur le réseau privé Azure, et la managed identity évite les secrets. C'est la configuration sécurisée recommandée.",
+    wrongAnswersExplanation: "Un conteneur public, une SAS permanente partagée par e-mail ou la désactivation du chiffrement créent des risques majeurs de fuite de données.",
+    examTip: "Données sensibles sur Blob = private endpoints + managed identity + chiffrement (activé par défaut). SAS de courte durée si nécessaire.",
+    realWorldExample: "Un assureur isole le stockage des contrats via private endpoint, accessible seulement par le service d'extraction.",
+    tags: ["sécurité", "Azure Blob Storage", "managed identities"]
+  },
+  {
+    id: "m4q8", module: "m4", type: "QCM simple", difficulty: "facile", answerKind: "single",
+    question: "Quelle capacité d'Azure AI Vision analyse un flux vidéo pour détecter la présence et les mouvements de personnes dans un espace physique ?",
+    context: "",
+    options: ["Spatial analysis", "OCR", "Embeddings", "Summarization"],
+    correctAnswers: [0],
+    explanation: "Spatial analysis d'Azure AI Vision analyse des flux vidéo pour détecter la présence, le comptage et les déplacements de personnes dans un espace.",
+    wrongAnswersExplanation: "L'OCR lit du texte, les embeddings vectorisent, la summarization résume du texte : aucun n'analyse l'occupation d'un espace.",
+    examTip: "Comptage/mouvements de personnes en vidéo = spatial analysis d'Azure AI Vision.",
+    realWorldExample: "Un magasin mesure l'affluence et les files d'attente avec spatial analysis pour optimiser le personnel.",
+    tags: ["spatial analysis", "Azure AI Vision"]
+  }
+];
+
+/* -------------------- 3. ÉTAT & STOCKAGE -------------------- */
+const LS_KEY = "ai103_progress_v1";
+const LS_QKEY = "ai103_imported_questions_v1";
+
+let questions = [];          // banque complète (base + importées)
+let exams = [];              // examens générés
+let store = loadStore();     // progression
+let runtime = null;          // état de l'examen en cours
+
+function loadStore() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { results: [], moduleProgress: {}, errors: {} };
+  // results: [{examId, title, kind, module, score, total, pct, pass, date, answers:{qid:correct}}]
+  // errors: { qid: {count, lastWrong} }
+}
+function saveStore() { localStorage.setItem(LS_KEY, JSON.stringify(store)); }
+
+function loadImportedQuestions() {
+  try {
+    const raw = localStorage.getItem(LS_QKEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return [];
+}
+function saveImportedQuestions(arr) { localStorage.setItem(LS_QKEY, JSON.stringify(arr)); }
+
+/* -------------------- 4. GÉNÉRATION DES EXAMENS -------------------- */
+/* PRNG déterministe (seedé) pour des examens stables */
+function seeded(seedStr) {
+  let h = 1779033703 ^ seedStr.length;
+  for (let i = 0; i < seedStr.length; i++) {
+    h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
+function shuffleSeed(arr, rng) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* Sélectionne des questions en respectant si possible la distribution de difficulté */
+function pickQuestions(pool, target, seed) {
+  const rng = seeded(seed);
+  if (pool.length === 0) return [];
+  const byDiff = { facile: [], intermédiaire: [], difficile: [] };
+  pool.forEach(q => { (byDiff[q.difficulty] || byDiff.intermédiaire).push(q); });
+  const chosen = [];
+  const used = new Set();
+  // 1) répartition par difficulté
+  for (const d of Object.keys(DIFF_DIST)) {
+    const want = Math.round(target * DIFF_DIST[d]);
+    const list = shuffleSeed(byDiff[d], rng);
+    for (let i = 0; i < want && i < list.length; i++) {
+      chosen.push(list[i]); used.add(list[i].id);
+    }
+  }
+  // 2) compléter avec le reste du pool jusqu'à la cible (sans dépasser le disponible)
+  const rest = shuffleSeed(pool.filter(q => !used.has(q.id)), rng);
+  let k = 0;
+  while (chosen.length < target && k < rest.length) {
+    chosen.push(rest[k]); used.add(rest[k].id); k++;
+  }
+  return shuffleSeed(chosen, seeded(seed + "-final"));
+}
+
+function buildExams() {
+  exams = [];
+  // Examens par module
+  modules.forEach(m => {
+    const pool = questions.filter(q => q.module === m.id);
+    for (let i = 1; i <= MODULE_EXAMS; i++) {
+      const id = `${m.id}-ex${i}`;
+      const qs = pickQuestions(pool, MODULE_Q, id);
+      exams.push({
+        id, kind: "module", module: m.id,
+        title: `${m.short} — Examen blanc ${i}`,
+        target: MODULE_Q, questionIds: qs.map(q => q.id)
+      });
+    }
+  });
+  // Examens finaux (mélange tous modules)
+  for (let i = 1; i <= FINAL_EXAMS; i++) {
+    const id = `final-ex${i}`;
+    const qs = pickQuestions(questions, FINAL_Q, id);
+    exams.push({
+      id, kind: "final", module: null,
+      title: `Examen final blanc ${i}`,
+      target: FINAL_Q, questionIds: qs.map(q => q.id)
+    });
+  }
+}
+
+const examIndex = () => Object.fromEntries(exams.map(e => [e.id, e]));
+const qIndex = () => Object.fromEntries(questions.map(q => [q.id, q]));
+
+function rebuildAll() {
+  const imported = loadImportedQuestions();
+  // fusion : base + importées (les importées peuvent écraser un id existant)
+  const map = new Map();
+  baseQuestions.forEach(q => map.set(q.id, q));
+  imported.forEach(q => map.set(q.id, normalizeQuestion(q)));
+  questions = Array.from(map.values());
+  buildExams();
+}
+
+function normalizeQuestion(q) {
+  // tolère des questions importées avec champs manquants
+  return Object.assign({
+    type: "QCM simple", difficulty: "intermédiaire", answerKind: "single",
+    context: "", options: [], correctAnswers: [], explanation: "",
+    wrongAnswersExplanation: "", examTip: "", realWorldExample: "", tags: []
+  }, q);
+}
+
+/* -------------------- 5. STATISTIQUES -------------------- */
+function moduleStats(moduleId) {
+  const res = store.results.filter(r => r.module === moduleId);
+  const done = new Set(res.map(r => r.examId)).size;
+  const best = {};
+  res.forEach(r => { if (!best[r.examId] || r.pct > best[r.examId]) best[r.examId] = r.pct; });
+  const pcts = Object.values(best);
+  const avg = pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 0;
+  let status = "Non commencé";
+  if (done >= MODULE_EXAMS) status = "Terminé";
+  else if (done > 0) status = "En cours";
+  return { done, total: MODULE_EXAMS, avg, status, attempts: res.length };
+}
+
+function globalStats() {
+  const res = store.results;
+  const finished = res.length;
+  const avg = finished ? Math.round(res.reduce((a, r) => a + r.pct, 0) / finished) : 0;
+  const strong = [], weak = [];
+  modules.forEach(m => {
+    const s = moduleStats(m.id);
+    if (s.attempts > 0) {
+      if (s.avg >= 80) strong.push(m);
+      else if (s.avg < PASS) weak.push(m);
+    }
+  });
+  return { finished, avg, strong, weak };
+}
+
+function errorCount() {
+  return Object.values(store.errors).filter(e => e.count > 0).length;
+}
+
+/* -------------------- 6. ROUTAGE / RENDU -------------------- */
+function nav(view) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + view).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.nav === view));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll(".nav-btn").forEach(b => {
+  b.addEventListener("click", () => {
+    const v = b.dataset.nav;
+    if (v === "home") renderHome();
+    if (v === "modules") renderModules();
+    if (v === "finals") renderFinals();
+    if (v === "review") renderReview();
+    if (v === "manage") renderManage();
+    nav(v);
+  });
+});
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+/* inline code/markdown léger : `code` */
+function fmt(s) {
+  return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+}
+
+/* ---------- HOME ---------- */
+function renderHome() {
+  const g = globalStats();
+  const el = document.getElementById("view-home");
+  el.innerHTML = `
+    <h2 class="section-title">Tableau de bord</h2>
+    <p class="section-sub">Suivez votre progression vers la certification AI-103 — Azure AI Apps and Agents Developer Associate.</p>
+    <div class="grid cols-4" style="margin-bottom:22px;">
+      <div class="card stat"><div class="num">${g.avg}%</div><div class="lbl">Score moyen</div></div>
+      <div class="card stat"><div class="num">${g.finished}</div><div class="lbl">Examens terminés</div></div>
+      <div class="card stat"><div class="num">${g.strong.length}</div><div class="lbl">Modules maîtrisés (≥80%)</div></div>
+      <div class="card stat"><div class="num">${errorCount()}</div><div class="lbl">Questions à revoir</div></div>
+    </div>
+
+    <div class="grid cols-2" style="margin-bottom:22px;">
+      <div class="card">
+        <h3 style="margin-top:0;">🚀 Commencer</h3>
+        <p style="color:var(--muted);font-size:14px;">Lancez un examen blanc par module ou un examen final complet.</p>
+        <div class="row">
+          <button class="btn lg" data-go="modules">Commencer un examen</button>
+          <button class="btn secondary lg" data-go="finals">Examens finaux</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0;">🔁 Réviser</h3>
+        <p style="color:var(--muted);font-size:14px;">Retravaillez les questions que vous avez ratées avec corrections détaillées.</p>
+        <button class="btn secondary lg" data-go="review">Réviser mes erreurs (${errorCount()})</button>
+      </div>
+    </div>
+
+    <h3>Modules</h3>
+    <div class="grid cols-2">
+      ${modules.map(m => {
+        const s = moduleStats(m.id);
+        return `<div class="card hover" data-module="${m.id}" style="cursor:pointer;">
+          <div class="row" style="align-items:flex-start;">
+            <div class="module-icon">${m.icon}</div>
+            <div style="flex:1;">
+              <div class="row" style="gap:6px;"><b>${esc(m.short)}</b> ${statusBadge(s.status)}</div>
+              <small style="color:var(--muted);">${esc(m.title)}</small>
+            </div>
+            <div class="stat"><div class="num" style="font-size:20px;">${s.avg}%</div></div>
+          </div>
+          <div class="progress" style="margin-top:12px;"><span style="width:${(s.done / s.total) * 100}%"></span></div>
+          <small style="color:var(--muted);">${s.done}/${s.total} examens</small>
+        </div>`;
+      }).join("")}
+    </div>
+
+    ${g.weak.length ? `<div class="card" style="margin-top:20px;border-left:4px solid var(--amber);">
+      <b>⚠️ Modules à renforcer :</b> ${g.weak.map(m => `<span class="pill">${esc(m.short)}</span>`).join("")}
+    </div>` : ""}
+  `;
+  el.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => {
+    const v = b.dataset.go;
+    if (v === "modules") { renderModules(); nav("modules"); }
+    if (v === "finals") { renderFinals(); nav("finals"); }
+    if (v === "review") { renderReview(); nav("review"); }
+  }));
+  el.querySelectorAll("[data-module]").forEach(c => c.addEventListener("click", () => {
+    renderModuleDetail(c.dataset.module); nav("module");
+  }));
+}
+
+function statusBadge(status) {
+  if (status === "Terminé") return `<span class="badge status-done">Terminé</span>`;
+  if (status === "En cours") return `<span class="badge status-progress">En cours</span>`;
+  return `<span class="badge status-new">Non commencé</span>`;
+}
+
+/* ---------- MODULES ---------- */
+function renderModules() {
+  const el = document.getElementById("view-modules");
+  el.innerHTML = `
+    <h2 class="section-title">Modules officiels</h2>
+    <p class="section-sub">4 domaines du cours AI-103 · ${MODULE_EXAMS} examens blancs de ${MODULE_Q} questions par module.</p>
+    <div class="grid cols-2">
+      ${modules.map(m => {
+        const s = moduleStats(m.id);
+        return `<div class="card module-card hover" data-module="${m.id}" style="cursor:pointer;">
+          <div class="module-icon">${m.icon}</div>
+          <div class="row" style="gap:8px;"><h3>${esc(m.short)}</h3> ${statusBadge(s.status)}</div>
+          <small style="color:var(--muted);font-weight:600;">${esc(m.title)}</small>
+          <p class="desc" style="margin-top:8px;">${esc(m.description)}</p>
+          <div class="row" style="font-size:12px;color:var(--muted);">
+            <span>⏱️ ${esc(m.duration)}</span><span>📚 ${m.paths} learning paths</span>
+          </div>
+          <div class="progress" style="margin-top:12px;"><span style="width:${(s.done / s.total) * 100}%"></span></div>
+          <div class="row" style="margin-top:8px;"><small style="color:var(--muted);">${s.done}/${s.total} examens · Score moyen ${s.avg}%</small><span class="spacer"></span><button class="btn secondary">Ouvrir</button></div>
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+  el.querySelectorAll("[data-module]").forEach(c => c.addEventListener("click", () => {
+    renderModuleDetail(c.dataset.module); nav("module");
+  }));
+}
+
+function renderModuleDetail(moduleId) {
+  const m = moduleIndex[moduleId];
+  const s = moduleStats(moduleId);
+  const modExams = exams.filter(e => e.kind === "module" && e.module === moduleId);
+  const el = document.getElementById("view-module");
+  el.innerHTML = `
+    <button class="btn ghost" id="back-mods">← Retour aux modules</button>
+    <div class="card" style="margin-top:14px;">
+      <div class="row" style="align-items:flex-start;">
+        <div class="module-icon" style="font-size:26px;width:54px;height:54px;">${m.icon}</div>
+        <div style="flex:1;">
+          <h2 style="margin:0 0 4px;">${esc(m.title)}</h2>
+          <div class="row" style="font-size:12.5px;color:var(--muted);">
+            <span>⏱️ ${esc(m.duration)}</span><span>📚 ${m.paths} learning paths</span>${statusBadge(s.status)}
+          </div>
+        </div>
+      </div>
+      <p style="color:#444;">${esc(m.description)}</p>
+      <b style="font-size:13px;">Compétences évaluées</b>
+      <ul class="skill-list">${m.skills.map(sk => `<li>${esc(sk)}</li>`).join("")}</ul>
+    </div>
+
+    <h3 style="margin-top:22px;">Examens blancs disponibles</h3>
+    <div class="card" style="padding:14px;">
+      ${modExams.map(ex => examRow(ex)).join("")}
+    </div>
+  `;
+  el.querySelector("#back-mods").addEventListener("click", () => { renderModules(); nav("modules"); });
+  bindExamRows(el);
+}
+
+function bestPctFor(examId) {
+  const rs = store.results.filter(r => r.examId === examId);
+  if (!rs.length) return null;
+  return Math.max(...rs.map(r => r.pct));
+}
+
+function examRow(ex) {
+  const best = bestPctFor(ex.id);
+  const avail = ex.questionIds.length;
+  const sub = `${avail} question${avail > 1 ? "s" : ""}${avail < ex.target ? ` (cible ${ex.target})` : ""}`;
+  return `<div class="exam-row">
+    <div class="meta">
+      <b>${esc(ex.title)}</b>
+      <small>${sub}${best != null ? ` · meilleur score ${best}%` : ""}</small>
+    </div>
+    ${best != null ? `<span class="badge ${best >= PASS ? "status-done" : "status-progress"}">${best}%</span>` : ""}
+    <button class="btn secondary" data-start="${ex.id}" data-mode="training">Entraînement</button>
+    <button class="btn" data-start="${ex.id}" data-mode="exam">Mode examen</button>
+  </div>`;
+}
+
+function bindExamRows(scope) {
+  scope.querySelectorAll("[data-start]").forEach(b => b.addEventListener("click", () => {
+    startExam(b.dataset.start, b.dataset.mode);
+  }));
+}
+
+/* ---------- FINALS ---------- */
+function renderFinals() {
+  const finals = exams.filter(e => e.kind === "final");
+  const el = document.getElementById("view-finals");
+  el.innerHTML = `
+    <h2 class="section-title">Examens finaux</h2>
+    <p class="section-sub">${FINAL_EXAMS} examens blancs complets de ${FINAL_Q} questions mélangeant les 4 domaines du cours.</p>
+    <div class="card" style="padding:14px;">
+      ${finals.map(ex => examRow(ex)).join("")}
+    </div>
+  `;
+  bindExamRows(el);
+}
+
+/* -------------------- 7. MOTEUR D'EXAMEN -------------------- */
+function startExam(examId, mode) {
+  const ex = examIndex()[examId];
+  if (!ex || ex.questionIds.length === 0) { toast("Aucune question disponible pour cet examen."); return; }
+  const qi = qIndex();
+  runtime = {
+    ex, mode,                 // mode: 'exam' | 'training'
+    qids: ex.questionIds.slice(),
+    qmap: qi,
+    idx: 0,
+    answers: {},              // qid -> array of selected indices (or order)
+    checked: {},              // qid -> bool (training: déjà corrigé)
+    startTime: Date.now(),
+    timer: null
+  };
+  if (mode === "exam") startTimer();
+  renderExamQuestion();
+  nav("exam");
+}
+
+function startTimer() {
+  const total = runtime.qids.length * 90; // 90s par question
+  runtime.remaining = total;
+  runtime.timer = setInterval(() => {
+    runtime.remaining--;
+    const t = document.getElementById("timer");
+    if (t) {
+      t.textContent = fmtTime(runtime.remaining);
+      t.classList.toggle("warn", runtime.remaining <= 60);
+    }
+    if (runtime.remaining <= 0) { clearInterval(runtime.timer); finishExam(true); }
+  }, 1000);
+}
+function fmtTime(s) {
+  s = Math.max(0, s);
+  const m = Math.floor(s / 60), sec = s % 60;
+  return `${m}:${String(sec).padStart(2, "0")}`;
+}
+
+function renderExamQuestion() {
+  const r = runtime;
+  const qid = r.qids[r.idx];
+  const q = r.qmap[qid];
+  const sel = r.answers[qid] || [];
+  const isChecked = r.mode === "training" && r.checked[qid];
+  const el = document.getElementById("view-exam");
+
+  let optionsHtml = "";
+  if (q.answerKind === "order") {
+    // ordre actuel : on garde l'état dans r.answers[qid] (liste d'index)
+    let order = r.answers[qid];
+    if (!order) { order = q.options.map((_, i) => i); r.answers[qid] = order; }
+    optionsHtml = `<div class="options" id="order-zone">${order.map((optIdx, pos) => `
+      <div class="order-item" data-pos="${pos}">
+        <span class="num">${pos + 1}</span>
+        <span class="txt">${fmt(q.options[optIdx])}</span>
+        <span class="arrows">
+          <button data-move="up" data-pos="${pos}" ${pos === 0 ? "disabled" : ""}>▲</button>
+          <button data-move="down" data-pos="${pos}" ${pos === order.length - 1 ? "disabled" : ""}>▼</button>
+        </span>
+      </div>`).join("")}</div>`;
+  } else {
+    const multi = q.answerKind === "multiple";
+    optionsHtml = `<div class="options">${q.options.map((opt, i) => {
+      let cls = "opt";
+      const chosen = sel.includes(i);
+      if (chosen && !isChecked) cls += " selected";
+      if (isChecked) {
+        if (q.correctAnswers.includes(i)) cls += " correct";
+        else if (chosen) cls += " incorrect";
+      }
+      let marker = "";
+      if (isChecked) {
+        if (q.correctAnswers.includes(i)) marker = `<span class="marker">✔ correcte</span>`;
+        else if (chosen) marker = `<span class="marker">✘ votre choix</span>`;
+      }
+      return `<label class="${cls}">
+        <input type="${multi ? "checkbox" : "radio"}" name="opt" value="${i}" ${chosen ? "checked" : ""} ${isChecked ? "disabled" : ""}/>
+        <span class="opt-label">${fmt(opt)}</span>${marker}
+      </label>`;
+    }).join("")}</div>`;
+  }
+
+  const answeredCount = r.qids.filter(id => (r.answers[id] && r.answers[id].length && r.qmap[id].answerKind !== "order") || (r.qmap[id].answerKind === "order")).length;
+
+  el.innerHTML = `
+    <div class="runner-top">
+      <div>
+        <b>${esc(r.ex.title)}</b>
+        <div class="qcounter">Question ${r.idx + 1} / ${r.qids.length} · ${r.mode === "exam" ? "Mode examen" : "Mode entraînement"}</div>
+      </div>
+      <span class="spacer"></span>
+      ${r.mode === "exam" ? `<div class="timer" id="timer">${fmtTime(r.remaining)}</div>` : `<span class="badge type">Correction immédiate</span>`}
+      <button class="btn ghost" id="quit-exam">Quitter</button>
+    </div>
+
+    <div class="progress" style="margin-bottom:16px;"><span style="width:${((r.idx + 1) / r.qids.length) * 100}%"></span></div>
+
+    <div class="question-card">
+      <div class="row" style="gap:6px;">
+        <span class="badge ${q.difficulty}">${q.difficulty}</span>
+        <span class="badge type">${esc(q.type)}</span>
+        ${moduleIndex[q.module] ? `<span class="badge status-new">${esc(moduleIndex[q.module].short)}</span>` : ""}
+        ${q.answerKind === "multiple" ? `<span class="badge status-progress">Plusieurs réponses</span>` : ""}
+        ${q.answerKind === "order" ? `<span class="badge status-progress">Ordre logique</span>` : ""}
+      </div>
+      <div class="qtext">${fmt(q.question)}</div>
+      ${q.context ? `<div class="context-box">${fmt(q.context)}</div>` : ""}
+      ${q.code ? `<pre class="code">${esc(q.code)}</pre>` : ""}
+      ${optionsHtml}
+      <div id="feedback-zone"></div>
+      <div class="nav-q">
+        <button class="btn ghost" id="prev-q" ${r.idx === 0 ? "disabled" : ""}>← Précédent</button>
+        ${r.mode === "training" && !isChecked ? `<button class="btn" id="check-q">Valider ma réponse</button>` : ""}
+        <span class="spacer"></span>
+        ${r.idx < r.qids.length - 1
+          ? `<button class="btn" id="next-q">Suivant →</button>`
+          : `<button class="btn" id="finish-q" style="background:var(--green);">Terminer l'examen</button>`}
+      </div>
+    </div>
+  `;
+
+  // bindings
+  if (q.answerKind === "order") {
+    el.querySelectorAll("[data-move]").forEach(btn => btn.addEventListener("click", () => {
+      const pos = parseInt(btn.dataset.pos, 10);
+      const dir = btn.dataset.move;
+      const order = r.answers[qid];
+      const swap = dir === "up" ? pos - 1 : pos + 1;
+      if (swap < 0 || swap >= order.length) return;
+      [order[pos], order[swap]] = [order[swap], order[pos]];
+      renderExamQuestion();
+    }));
+  } else if (!isChecked) {
+    el.querySelectorAll('input[name="opt"]').forEach(inp => inp.addEventListener("change", () => {
+      const multi = q.answerKind === "multiple";
+      if (multi) {
+        const chosen = Array.from(el.querySelectorAll('input[name="opt"]:checked')).map(x => parseInt(x.value, 10));
+        r.answers[qid] = chosen;
+      } else {
+        r.answers[qid] = [parseInt(inp.value, 10)];
+      }
+      // refléter la sélection visuelle sans recharger
+      el.querySelectorAll(".opt").forEach((o, i) => o.classList.toggle("selected", (r.answers[qid] || []).includes(i)));
+    }));
+  }
+  if (isChecked) showFeedback(q);
+
+  const prev = el.querySelector("#prev-q"); if (prev) prev.addEventListener("click", () => { r.idx--; renderExamQuestion(); });
+  const next = el.querySelector("#next-q"); if (next) next.addEventListener("click", () => { r.idx++; renderExamQuestion(); });
+  const fin = el.querySelector("#finish-q"); if (fin) fin.addEventListener("click", () => confirmFinish());
+  const chk = el.querySelector("#check-q"); if (chk) chk.addEventListener("click", () => {
+    if (!hasAnswer(q, r.answers[qid])) { toast("Sélectionnez une réponse d'abord."); return; }
+    r.checked[qid] = true; renderExamQuestion();
+  });
+  el.querySelector("#quit-exam").addEventListener("click", () => {
+    if (confirm("Quitter l'examen ? Votre progression sur cet examen sera perdue.")) {
+      if (r.timer) clearInterval(r.timer);
+      runtime = null; renderHome(); nav("home");
+    }
+  });
+}
+
+function hasAnswer(q, ans) {
+  if (q.answerKind === "order") return true; // toujours un ordre
+  return ans && ans.length > 0;
+}
+
+function isCorrect(q, ans) {
+  if (!ans) return false;
+  if (q.answerKind === "order") {
+    return ans.length === q.correctAnswers.length && ans.every((v, i) => v === q.correctAnswers[i]);
+  }
+  const a = [...ans].sort((x, y) => x - y);
+  const b = [...q.correctAnswers].sort((x, y) => x - y);
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+
+function showFeedback(q) {
+  const r = runtime;
+  const ans = r.answers[r.qids[r.idx]];
+  const ok = isCorrect(q, ans);
+  const zone = document.getElementById("feedback-zone");
+  if (!zone) return;
+  zone.innerHTML = `
+    <div class="feedback ${ok ? "ok" : "ko"}">
+      <h4>${ok ? "✅ Bonne réponse !" : "❌ Réponse incorrecte"}</h4>
+      <div class="block"><b>Explication</b>${fmt(q.explanation)}</div>
+      ${q.wrongAnswersExplanation ? `<div class="block"><b>Pourquoi les autres réponses sont fausses</b>${fmt(q.wrongAnswersExplanation)}</div>` : ""}
+      ${q.examTip ? `<div class="tip"><b>💡 Astuce examen</b><br>${fmt(q.examTip)}</div>` : ""}
+      ${q.realWorldExample ? `<div class="realworld"><b>🏢 Cas réel entreprise</b><br>${fmt(q.realWorldExample)}</div>` : ""}
+      ${q.tags && q.tags.length ? `<div style="margin-top:10px;">${q.tags.map(t => `<span class="pill">${esc(t)}</span>`).join("")}</div>` : ""}
+    </div>`;
+}
+
+function confirmFinish() {
+  const r = runtime;
+  const unanswered = r.qids.filter(id => r.qmap[id].answerKind !== "order" && !hasAnswer(r.qmap[id], r.answers[id])).length;
+  let msg = "Terminer l'examen et voir la correction ?";
+  if (unanswered > 0) msg = `${unanswered} question(s) sans réponse. Terminer quand même ?`;
+  if (confirm(msg)) finishExam(false);
+}
+
+function finishExam(timeUp) {
+  const r = runtime;
+  if (r.timer) clearInterval(r.timer);
+  let correct = 0;
+  const answersMap = {};
+  r.qids.forEach(id => {
+    const q = r.qmap[id];
+    const ok = isCorrect(q, r.answers[id]);
+    answersMap[id] = ok;
+    if (ok) correct++;
+    else {
+      // enregistrer l'erreur
+      if (!store.errors[id]) store.errors[id] = { count: 0 };
+      store.errors[id].count++;
+      store.errors[id].lastWrong = new Date().toISOString();
+    }
+    // si réussi et présent dans les erreurs, on décrémente (révision réussie)
+    if (ok && store.errors[id] && store.errors[id].count > 0) {
+      store.errors[id].count = Math.max(0, store.errors[id].count - 1);
+    }
+  });
+  const total = r.qids.length;
+  const pct = total ? Math.round((correct / total) * 100) : 0;
+  const result = {
+    examId: r.ex.id, title: r.ex.title, kind: r.ex.kind, module: r.ex.module,
+    score: correct, total, pct, pass: pct >= PASS,
+    mode: r.mode, timeUp: !!timeUp,
+    date: new Date().toISOString(), answers: answersMap
+  };
+  store.results.push(result);
+  saveStore();
+  renderResults(result, r);
+  nav("results");
+}
+
+/* ---------- RESULTS ---------- */
+function renderResults(result, r) {
+  const el = document.getElementById("view-results");
+  const pass = result.pass;
+  const color = pass ? "var(--green)" : "var(--red)";
+  const ringDeg = result.pct * 3.6;
+
+  // modules faibles dans cet examen
+  const moduleScores = {};
+  r.qids.forEach(id => {
+    const q = r.qmap[id];
+    moduleScores[q.module] = moduleScores[q.module] || { ok: 0, tot: 0 };
+    moduleScores[q.module].tot++;
+    if (result.answers[id]) moduleScores[q.module].ok++;
+  });
+  const weakModules = Object.entries(moduleScores)
+    .filter(([m, s]) => (s.ok / s.tot) < 0.7)
+    .map(([m]) => moduleIndex[m]).filter(Boolean);
+
+  // concepts à revoir (tags des questions ratées)
+  const weakTags = {};
+  r.qids.forEach(id => {
+    if (!result.answers[id]) (r.qmap[id].tags || []).forEach(t => weakTags[t] = (weakTags[t] || 0) + 1);
+  });
+  const topTags = Object.entries(weakTags).sort((a, b) => b[1] - a[1]).slice(0, 8).map(x => x[0]);
+
+  const advice = buildAdvice(result, weakModules, topTags);
+
+  el.innerHTML = `
+    <div class="card score-hero">
+      ${result.timeUp ? `<div class="badge status-progress" style="margin-bottom:10px;">⏰ Temps écoulé</div>` : ""}
+      <div class="score-ring" style="background:conic-gradient(${color} ${ringDeg}deg, #e7ebf0 0deg);">
+        <div class="inner" style="flex-direction:column;">
+          <div class="pct" style="color:${color};">${result.pct}%</div>
+          <small style="color:var(--muted);">${result.score}/${result.total}</small>
+        </div>
+      </div>
+      <div class="verdict ${pass ? "pass" : "fail"}">${pass ? "✅ Réussi" : "📌 À revoir"}</div>
+      <p style="color:var(--muted);margin:0;">${esc(result.title)} · seuil de réussite ${PASS}%</p>
+      <div class="row" style="justify-content:center;margin-top:16px;">
+        <button class="btn" id="retry">Recommencer cet examen</button>
+        <button class="btn secondary" id="to-home">Tableau de bord</button>
+      </div>
+    </div>
+
+    <div class="grid cols-3" style="margin:20px 0;">
+      <div class="card stat"><div class="num" style="color:var(--green);">${result.score}</div><div class="lbl">Réussies</div></div>
+      <div class="card stat"><div class="num" style="color:var(--red);">${result.total - result.score}</div><div class="lbl">Ratées</div></div>
+      <div class="card stat"><div class="num">${result.pct}%</div><div class="lbl">Pourcentage</div></div>
+    </div>
+
+    ${weakModules.length ? `<div class="card" style="border-left:4px solid var(--amber);margin-bottom:14px;">
+      <b>Modules faibles sur cet examen</b><br>${weakModules.map(m => `<span class="pill">${esc(m.short)}</span>`).join("")}
+    </div>` : ""}
+    ${topTags.length ? `<div class="card" style="border-left:4px solid var(--azure);margin-bottom:14px;">
+      <b>Notions à revoir</b><br>${topTags.map(t => `<span class="pill">${esc(t)}</span>`).join("")}
+    </div>` : ""}
+    <div class="card" style="margin-bottom:18px;">
+      <b>📋 Conseils personnalisés</b>
+      <ul class="skill-list">${advice.map(a => `<li>${esc(a)}</li>`).join("")}</ul>
+    </div>
+
+    <h3>Correction complète</h3>
+    <div id="review-list">${r.qids.map((id, i) => reviewItem(r.qmap[id], result.answers[id], r.answers[id], i)).join("")}</div>
+  `;
+
+  el.querySelector("#retry").addEventListener("click", () => startExam(result.examId, r.mode));
+  el.querySelector("#to-home").addEventListener("click", () => { renderHome(); nav("home"); });
+  bindReviewItems(el);
+}
+
+function buildAdvice(result, weakModules, topTags) {
+  const a = [];
+  if (result.pass) a.push("Bon score ! Consolidez en refaisant un examen final pour valider votre régularité.");
+  else a.push(`Score sous le seuil de ${PASS}%. Reprenez les explications des questions ratées avant de réessayer.`);
+  if (weakModules.length) a.push(`Concentrez-vous sur : ${weakModules.map(m => m.title).join(", ")}.`);
+  if (topTags.length) a.push(`Révisez ces notions clés : ${topTags.slice(0, 5).join(", ")}.`);
+  a.push("Utilisez le mode Entraînement pour obtenir la correction immédiate après chaque question.");
+  a.push("Consultez 'Réviser mes erreurs' pour retravailler uniquement vos questions ratées.");
+  return a;
+}
+
+function reviewItem(q, ok, userAns, i) {
+  const userTxt = formatUserAnswer(q, userAns);
+  const correctTxt = formatCorrectAnswer(q);
+  return `<div class="review-item">
+    <div class="head">
+      <div class="ic ${ok ? "ok" : "ko"}">${ok ? "✓" : "✗"}</div>
+      <div style="flex:1;"><b>Q${i + 1}.</b> ${fmt(q.question)}</div>
+      <span class="badge ${q.difficulty}">${q.difficulty}</span>
+    </div>
+    <div class="body">
+      ${q.context ? `<div class="context-box">${fmt(q.context)}</div>` : ""}
+      ${q.code ? `<pre class="code">${esc(q.code)}</pre>` : ""}
+      <p style="margin:6px 0;"><b>Votre réponse :</b> <span style="color:${ok ? "var(--green)" : "var(--red)"};">${userTxt}</span></p>
+      <p style="margin:6px 0;"><b>Bonne réponse :</b> <span style="color:var(--green);">${correctTxt}</span></p>
+      <div class="feedback ${ok ? "ok" : "ko"}" style="margin-top:8px;">
+        <div class="block"><b>Explication</b>${fmt(q.explanation)}</div>
+        ${q.wrongAnswersExplanation ? `<div class="block"><b>Pourquoi les autres sont fausses</b>${fmt(q.wrongAnswersExplanation)}</div>` : ""}
+        ${q.examTip ? `<div class="tip"><b>💡 Astuce examen</b><br>${fmt(q.examTip)}</div>` : ""}
+        ${q.realWorldExample ? `<div class="realworld"><b>🏢 Cas réel</b><br>${fmt(q.realWorldExample)}</div>` : ""}
+      </div>
+    </div>
+  </div>`;
+}
+
+function formatUserAnswer(q, userAns) {
+  if (!userAns || (q.answerKind !== "order" && !userAns.length)) return "(aucune réponse)";
+  if (q.answerKind === "order") return userAns.map((idx, p) => `${p + 1}. ${esc(stripCode(q.options[idx]))}`).join(" · ");
+  return userAns.map(i => esc(stripCode(q.options[i]))).join(" ; ");
+}
+function formatCorrectAnswer(q) {
+  if (q.answerKind === "order") return q.correctAnswers.map((idx, p) => `${p + 1}. ${esc(stripCode(q.options[idx]))}`).join(" · ");
+  return q.correctAnswers.map(i => esc(stripCode(q.options[i]))).join(" ; ");
+}
+function stripCode(s) { return String(s).replace(/`/g, ""); }
+
+function bindReviewItems(scope) {
+  scope.querySelectorAll(".review-item .head").forEach(h => h.addEventListener("click", () => {
+    h.parentElement.classList.toggle("open");
+  }));
+}
+
+/* ---------- REVIEW ERRORS ---------- */
+function renderReview() {
+  const el = document.getElementById("view-review");
+  const wrongIds = Object.entries(store.errors).filter(([id, e]) => e.count > 0).map(([id]) => id);
+  const qi = qIndex();
+  const list = wrongIds.map(id => qi[id]).filter(Boolean);
+
+  if (list.length === 0) {
+    el.innerHTML = `<h2 class="section-title">Réviser mes erreurs</h2>
+      <div class="empty"><div class="big">🎉</div><b>Aucune erreur à réviser !</b>
+      <p>Terminez des examens : les questions ratées apparaîtront ici pour révision ciblée.</p>
+      <button class="btn" id="go-mods">Commencer un examen</button></div>`;
+    el.querySelector("#go-mods").addEventListener("click", () => { renderModules(); nav("modules"); });
+    return;
+  }
+
+  el.innerHTML = `
+    <h2 class="section-title">Réviser mes erreurs</h2>
+    <p class="section-sub">${list.length} question(s) ratée(s). Relancez une session de révision ou consultez les corrections.</p>
+    <div class="row" style="margin-bottom:16px;">
+      <button class="btn lg" id="start-review">▶️ Lancer une révision (mode entraînement)</button>
+      <button class="btn ghost" id="clear-errors">Effacer mes erreurs</button>
+    </div>
+    <div id="rev-list">${list.map((q, i) => reviewItem(q, false, null, i)).join("")}</div>
+  `;
+  el.querySelector("#start-review").addEventListener("click", () => startReviewSession(wrongIds));
+  el.querySelector("#clear-errors").addEventListener("click", () => {
+    if (confirm("Effacer toutes les erreurs enregistrées ?")) { store.errors = {}; saveStore(); renderReview(); }
+  });
+  bindReviewItems(el);
+}
+
+function startReviewSession(ids) {
+  const qi = qIndex();
+  const valid = ids.filter(id => qi[id]);
+  if (!valid.length) { toast("Aucune question à réviser."); return; }
+  runtime = {
+    ex: { id: "review-session", title: "Révision de mes erreurs", kind: "review", module: null, questionIds: valid, target: valid.length },
+    mode: "training", qids: valid.slice(), qmap: qi, idx: 0, answers: {}, checked: {}, startTime: Date.now(), timer: null
+  };
+  renderExamQuestion();
+  nav("exam");
+}
+
+/* ---------- MANAGE / IMPORT ---------- */
+function renderManage() {
+  const el = document.getElementById("view-manage");
+  const imported = loadImportedQuestions();
+  el.innerHTML = `
+    <h2 class="section-title">Gérer les questions & la progression</h2>
+    <p class="section-sub">Banque actuelle : ${questions.length} questions (${baseQuestions.length} de base + ${imported.length} importées).</p>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3 style="margin-top:0;">📥 Importer des questions (JSON)</h3>
+      <p style="color:var(--muted);font-size:13.5px;">Collez un tableau JSON de questions ou chargez un fichier <code>.json</code>. Les examens se reconstruisent automatiquement. Champs requis : <code>id, module, question, options, correctAnswers</code>.</p>
+      <input type="file" id="json-file" accept="application/json,.json" />
+      <textarea class="json-in" id="json-text" placeholder='[{"id":"x1","module":"m1","type":"QCM simple","difficulty":"facile","answerKind":"single","question":"...","options":["A","B"],"correctAnswers":[0],"explanation":"...","tags":["..."]}]'></textarea>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn" id="import-btn">Importer</button>
+        <button class="btn secondary" id="show-schema">Voir le format / exemple</button>
+        <button class="btn ghost" id="export-base">Exporter la banque de base</button>
+        ${imported.length ? `<button class="btn danger" id="clear-imported">Supprimer les importées</button>` : ""}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3 style="margin-top:0;">🗂️ Examens disponibles</h3>
+      <p style="color:var(--muted);font-size:13.5px;">${exams.filter(e=>e.kind==='module').length} examens de module + ${exams.filter(e=>e.kind==='final').length} examens finaux. Chaque examen vise ${MODULE_Q} (module) / ${FINAL_Q} (final) questions ; ajoutez des questions pour atteindre la cible.</p>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--green);"></span> facile 20%</span>
+        <span><span class="dot" style="background:var(--azure);"></span> intermédiaire 50%</span>
+        <span><span class="dot" style="background:var(--red);"></span> difficile 30%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">⚙️ Données & progression</h3>
+      <p style="color:var(--muted);font-size:13.5px;">Examens terminés : ${store.results.length} · Erreurs enregistrées : ${errorCount()}</p>
+      <div class="row">
+        <button class="btn secondary" id="export-progress">Exporter ma progression</button>
+        <button class="btn danger" id="reset-progress">Réinitialiser toute la progression</button>
+      </div>
+    </div>
+  `;
+
+  el.querySelector("#json-file").addEventListener("change", (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => { document.getElementById("json-text").value = reader.result; };
+    reader.readAsText(f);
+  });
+  el.querySelector("#import-btn").addEventListener("click", () => doImport(document.getElementById("json-text").value));
+  el.querySelector("#show-schema").addEventListener("click", showSchema);
+  el.querySelector("#export-base").addEventListener("click", () => download("ai103-banque-base.json", JSON.stringify(baseQuestions, null, 2)));
+  el.querySelector("#export-progress").addEventListener("click", () => download("ai103-progression.json", JSON.stringify(store, null, 2)));
+  el.querySelector("#reset-progress").addEventListener("click", () => {
+    if (confirm("Réinitialiser toute la progression (scores, erreurs, historique) ?")) {
+      store = { results: [], moduleProgress: {}, errors: {} }; saveStore(); renderManage(); toast("Progression réinitialisée.");
+    }
+  });
+  const ci = el.querySelector("#clear-imported");
+  if (ci) ci.addEventListener("click", () => {
+    if (confirm("Supprimer toutes les questions importées ?")) { saveImportedQuestions([]); rebuildAll(); renderManage(); toast("Questions importées supprimées."); }
+  });
+}
+
+function doImport(text) {
+  if (!text || !text.trim()) { toast("Collez du JSON ou chargez un fichier."); return; }
+  let data;
+  try { data = JSON.parse(text); } catch (e) { toast("JSON invalide : " + e.message); return; }
+  if (!Array.isArray(data)) data = data.questions || [data];
+  const valid = [], errors = [];
+  data.forEach((q, i) => {
+    if (!q.id || !q.module || !q.question || !Array.isArray(q.options) || !Array.isArray(q.correctAnswers)) {
+      errors.push(i); return;
+    }
+    if (!moduleIndex[q.module]) { errors.push(i); return; }
+    valid.push(normalizeQuestion(q));
+  });
+  if (!valid.length) { toast("Aucune question valide trouvée (vérifiez id, module, options, correctAnswers)."); return; }
+  const existing = loadImportedQuestions();
+  const map = new Map(existing.map(q => [q.id, q]));
+  valid.forEach(q => map.set(q.id, q));
+  saveImportedQuestions(Array.from(map.values()));
+  rebuildAll();
+  renderManage();
+  toast(`${valid.length} question(s) importée(s)${errors.length ? `, ${errors.length} ignorée(s)` : ""}.`);
+}
+
+function showSchema() {
+  const example = {
+    id: "m1q99",
+    module: "m1",
+    type: "QCM simple",
+    difficulty: "intermédiaire",
+    answerKind: "single",
+    question: "Quel service... ?",
+    context: "Contexte optionnel de l'étude de cas.",
+    code: "// code optionnel à analyser",
+    options: ["Option A", "Option B", "Option C", "Option D"],
+    correctAnswers: [1],
+    explanation: "Pourquoi la bonne réponse est correcte.",
+    wrongAnswersExplanation: "Pourquoi les autres sont fausses.",
+    examTip: "Astuce pour l'examen.",
+    realWorldExample: "Cas d'usage entreprise.",
+    tags: ["Azure OpenAI Service", "RAG"]
+  };
+  openModal(`
+    <h3>Format d'une question (JSON)</h3>
+    <p style="font-size:13px;color:var(--muted);">
+      <b>module</b> : "m1" GenAI · "m2" Agents · "m3" NLP · "m4" Vision/Documents<br>
+      <b>difficulty</b> : "facile" · "intermédiaire" · "difficile"<br>
+      <b>answerKind</b> : "single" (une réponse) · "multiple" (plusieurs) · "order" (ordre logique ; correctAnswers = ordre des index)<br>
+      <b>correctAnswers</b> : tableau d'index (commence à 0).
+    </p>
+    <pre class="code">${esc(JSON.stringify([example], null, 2))}</pre>
+    <div class="row"><span class="spacer"></span><button class="btn" id="close-modal">Fermer</button></div>
+  `);
+}
+
+/* -------------------- 8. UTILITAIRES UI -------------------- */
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+function openModal(html) {
+  const bg = document.getElementById("modal-bg");
+  document.getElementById("modal").innerHTML = html;
+  bg.classList.add("show");
+  const close = document.getElementById("close-modal");
+  if (close) close.addEventListener("click", () => bg.classList.remove("show"));
+  bg.onclick = (e) => { if (e.target === bg) bg.classList.remove("show"); };
+}
+function download(name, content) {
+  const blob = new Blob([content], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* -------------------- 9. INIT -------------------- */
+rebuildAll();
+renderHome();
+</script>
+</body>
+</html>
