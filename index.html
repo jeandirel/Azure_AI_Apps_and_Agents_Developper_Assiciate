@@ -4454,31 +4454,73 @@ function pickQuestions(pool, target, seed) {
   return shuffleSeed(capped, seeded(seed + "-final"));
 }
 
+/* Ordonne un pool en répartissant les difficultés de façon homogène (toute
+   fenêtre contiguë respecte ~20/50/30), sans répétition. */
+function stratifiedOrder(pool, seed) {
+  const rng = seeded(seed);
+  const b = { facile: [], intermédiaire: [], difficile: [] };
+  pool.forEach(q => { (b[q.difficulty] || b.intermédiaire).push(q); });
+  for (const k in b) b[k] = shuffleSeed(b[k], rng);
+  const ptr = { facile: 0, intermédiaire: 0, difficile: 0 };
+  const emitted = { facile: 0, intermédiaire: 0, difficile: 0 };
+  const order = ["facile", "intermédiaire", "difficile"];
+  const out = [];
+  const total = pool.length;
+  while (out.length < total) {
+    let best = null, bestScore = -Infinity;
+    for (const d of order) {
+      if (ptr[d] >= b[d].length) continue;
+      const score = DIFF_DIST[d] - (emitted[d] / (out.length + 1));
+      if (score > bestScore) { bestScore = score; best = d; }
+    }
+    if (!best) break;
+    out.push(b[best][ptr[best]++]); emitted[best]++;
+  }
+  return out;
+}
+
+/* Partitionne le pool en nExams examens de perExam questions chacun.
+   Disjoints quand le pool est assez grand (≥ nExams*perExam) ; sinon on
+   "boucle" sur l'ordre pour garder des examens de taille pleine (avec un
+   minimum de recouvrement), tout en évitant les doublons au sein d'un examen. */
+function makeExamSet(pool, nExams, perExam, seed) {
+  const order = stratifiedOrder(pool, seed);
+  const N = order.length;
+  const result = [];
+  for (let i = 0; i < nExams; i++) {
+    const ids = [];
+    const seen = new Set();
+    let idx = i * perExam, guard = 0;
+    while (N > 0 && ids.length < perExam && guard < perExam * 4) {
+      const q = order[((idx % N) + N) % N];
+      idx++; guard++;
+      if (!seen.has(q.id)) { seen.add(q.id); ids.push(q.id); }
+      else if (seen.size >= N) break; // pool plus petit que perExam
+    }
+    result.push(ids);
+  }
+  return result;
+}
+
 function buildExams() {
   exams = [];
-  // Examens par module
+  // Examens par module : 5 examens distincts par partitionnement du pool
   modules.forEach(m => {
     const pool = questions.filter(q => q.module === m.id);
-    for (let i = 1; i <= MODULE_EXAMS; i++) {
-      const id = `${m.id}-ex${i}`;
-      const qs = pickQuestions(pool, MODULE_Q, id);
-      exams.push({
-        id, kind: "module", module: m.id,
-        title: `${m.short} — Examen blanc ${i}`,
-        target: MODULE_Q, questionIds: qs.map(q => q.id)
-      });
-    }
+    const sets = makeExamSet(pool, MODULE_EXAMS, MODULE_Q, m.id + "-mod");
+    sets.forEach((ids, i) => exams.push({
+      id: `${m.id}-ex${i + 1}`, kind: "module", module: m.id,
+      title: `${m.short} — Examen blanc ${i + 1}`,
+      target: MODULE_Q, questionIds: ids
+    }));
   });
-  // Examens finaux (mélange tous modules)
-  for (let i = 1; i <= FINAL_EXAMS; i++) {
-    const id = `final-ex${i}`;
-    const qs = pickQuestions(questions, FINAL_Q, id);
-    exams.push({
-      id, kind: "final", module: null,
-      title: `Examen final blanc ${i}`,
-      target: FINAL_Q, questionIds: qs.map(q => q.id)
-    });
-  }
+  // Examens finaux : 10 examens distincts mélangeant tous les modules
+  const fsets = makeExamSet(questions, FINAL_EXAMS, FINAL_Q, "final-all");
+  fsets.forEach((ids, i) => exams.push({
+    id: `final-ex${i + 1}`, kind: "final", module: null,
+    title: `Examen final blanc ${i + 1}`,
+    target: FINAL_Q, questionIds: ids
+  }));
 }
 
 const examIndex = () => Object.fromEntries(exams.map(e => [e.id, e]));
